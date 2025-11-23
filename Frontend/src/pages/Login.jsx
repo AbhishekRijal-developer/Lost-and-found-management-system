@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import laptopImage from "../assets/laptop.png";
+import Footer from "../component/Footer";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,10 +38,8 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 p-6">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6 items-center">
 
-        {/* LEFT IMAGE SECTION */}
         <div className="flex flex-col gap-6 w-full">
           
-          {/* Top Image */}
           <div className="relative rounded-xl overflow-hidden h-[350px]">
             <img
               src={laptopImage}
@@ -49,7 +48,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Welcome Box */}
           <div className="p-6 bg-white/40 backdrop-blur-md rounded-xl border border-white/20 text-center max-w-2xl mx-auto">
             <h2 className="text-xl font-bold mb-2">
               Welcome to Our Lost and Found Website!
@@ -65,7 +63,6 @@ export default function Login() {
 
         </div>
 
-        {/* RIGHT SECTION (Login Form) */}
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
 
@@ -123,6 +120,7 @@ export default function Login() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

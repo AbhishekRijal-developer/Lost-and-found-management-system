@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import laptopImage from "../assets/laptop.png";
+import Footer from "../component/Footer";
 export default function Register() {
   const [formData, setFormData] = useState({
     name: "",
@@ -38,14 +39,13 @@ export default function Register() {
     }
 
     setError("");
-    setSuccess("Registered successfully! (Frontend only)");
+    setSuccess("Registered successfully!");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 to-yellow-100 p-6">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6 items-center">
 
-        {/* LEFT FORM */}
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <h1 className="text-3xl font-bold mb-6 text-center">Register</h1>
 
@@ -148,10 +148,8 @@ export default function Register() {
           </form>
         </div>
 
-{/* RIGHT IMAGE SECTION */}
 <div className="flex flex-col gap-6 w-full">
   
-  {/* Top Image */}
   <div className="relative rounded-xl overflow-hidden h-[350px]">
     <img
       src={laptopImage}
@@ -160,7 +158,6 @@ export default function Register() {
     />
   </div>
 
-  {/* Welcome Box */}
   <div className="p-6 bg-white/40 backdrop-blur-md rounded-xl border border-white/20 text-center max-w-2xl mx-auto">
     <h2 className="text-xl font-bold mb-2">
       Welcome to Our Lost and Found Website!
@@ -182,6 +179,7 @@ export default function Register() {
 
 
       </div>
+      <Footer />
     </div>
   );
 }

@@ -8,7 +8,8 @@ export default function Footer() {
         <div>
           <h2 className="text-xl font-semibold mb-3">Lost & Found System</h2>
           <p className="text-gray-300">
-            Helping users quickly report, find, and return lost items easily.
+            <h3>Helping users quickly report,</h3> 
+            <h3>find, and return lost items easily.</h3>
           </p>
         </div>
 
@@ -25,7 +26,7 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-3">Contact Us</h3>
           <p className="text-gray-300">Email: support@lostandfound.com</p>
-          <p className="text-gray-300">Phone: +977 9800000000</p>
+          <p className="text-gray-300">Phone: +9770000000000</p>
           <p className="text-gray-300">Location: Itahari International collage</p>
         </div>
 

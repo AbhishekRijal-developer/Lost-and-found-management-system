@@ -11,13 +11,10 @@ export default function AboutUsPage() {
 
       <div className="w-full max-w-6xl bg-white rounded-xl shadow-xl overflow-hidden">
 
-        {/* Title */}
         <h1 className="text-center text-3xl font-semibold py-10">About us</h1>
 
-        {/* Gradient Section */}
         <div className="bg-gradient-to-b from-white to-[#ffb3b3] pt-10 pb-20 px-10">
 
-          {/* Circles + Icons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 justify-items-center">
             {[1, 2, 3, 4].map((n) => (
               <div key={n} className="flex flex-col items-center">
@@ -33,7 +30,6 @@ export default function AboutUsPage() {
           </div>
         </div>
 
-        {/* Mission Section */}
         <div className="bg-black text-white rounded-lg mx-auto my-10 px-10 py-8 w-[90%] sm:w-[80%] shadow-xl">
           <h2 className="text-center text-2xl font-semibold mb-4">Our mission</h2>
           <p className="text-center text-sm leading-relaxed">
@@ -47,7 +43,6 @@ export default function AboutUsPage() {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="w-full mt-10">
         <Footer />
       </div>

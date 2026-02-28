@@ -48,6 +48,7 @@ export default function AboutUsPage() {
         <p className="text-gray-600 text-lg">Discover our mission and meet our amazing team</p>
       </motion.div>
 
+<<<<<<< HEAD
       {/* Main Content */}
       <div className="flex-1 w-full max-w-7xl mx-auto px-6 pb-10">
         
@@ -119,6 +120,16 @@ export default function AboutUsPage() {
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-transparent group-hover:from-black/20 transition-all"></div>
                   </div>
+=======
+        <h1 className="text-center text-3xl font-semibold py-10">About us</h1>
+
+        <div className="bg-gradient-to-b from-white to-[#ffb3b3] pt-10 pb-20 px-10">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 justify-items-center">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="flex flex-col items-center">
+                <div className="w-44 h-44 bg-gray-300 rounded-full"></div>
+>>>>>>> 0baab13aa6b18f58a9185116ea8225fcd4960a23
 
                   {/* Content */}
                   <div className="p-6 text-center">
@@ -219,6 +230,24 @@ export default function AboutUsPage() {
           </div>
         </motion.div>
 
+<<<<<<< HEAD
+=======
+        <div className="bg-black text-white rounded-lg mx-auto my-10 px-10 py-8 w-[90%] sm:w-[80%] shadow-xl">
+          <h2 className="text-center text-2xl font-semibold mb-4">Our mission</h2>
+          <p className="text-center text-sm leading-relaxed">
+            “Our mission is to create a reliable and efficient platform for reuniting lost items
+            with their rightful owners. We aim to foster a supportive community where users can
+            easily report, search, and recover lost belongings, enhancing trust and cooperation
+            among individuals. By leveraging technology, we strive to reduce the time, effort, and
+            stress associated with finding lost items, ensuring a seamless and satisfying
+            experience for all our users.”
+          </p>
+        </div>
+      </div>
+
+      <div className="w-full mt-10">
+        <Footer />
+>>>>>>> 0baab13aa6b18f58a9185116ea8225fcd4960a23
       </div>
 
       <Footer />

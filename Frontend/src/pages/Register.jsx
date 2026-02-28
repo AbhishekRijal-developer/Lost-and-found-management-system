@@ -1,7 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import laptopImage from "../assets/laptop.png";
+import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import { HiOutlineUser, HiOutlineMail, HiOutlineLockClosed, HiOutlinePhone } from "react-icons/hi";
+import { authAPI } from "../services/api.js";
+
 export default function Register() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     gender: "",
@@ -14,14 +23,15 @@ export default function Register() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [imageError, setImageError] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (!formData.name || !formData.email || !formData.password) {
       setError("Please fill all required fields.");
@@ -38,148 +48,261 @@ export default function Register() {
       return;
     }
 
-    setError("");
-    setSuccess("Registered successfully!");
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await authAPI.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone || null,
+        role: formData.role,
+      });
+
+      if (response.success) {
+        setSuccess("Account created successfully! Redirecting to login...");
+        setTimeout(() => navigate('/login'), 1500);
+      }
+    } catch (err) {
+      setError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 to-yellow-100 p-6">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6 items-center">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
 
-        <div className="bg-white p-8 rounded-xl shadow-lg">
-          <h1 className="text-3xl font-bold mb-6 text-center">Register</h1>
-
-          {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
-          {success && <p className="text-green-600 text-sm mb-3">{success}</p>}
-
-          <form onSubmit={handleSubmit}>
-
-            <label className="block font-medium">Name</label>
-            <input
-              type="text"
-              name="name"
-              className="w-full p-2 border rounded mb-3"
-              placeholder="Enter full name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-
-            <label className="block font-medium">Gender</label>
-            <select
-              name="gender"
-              className="w-full p-2 border rounded mb-3"
-              value={formData.gender}
-              onChange={handleChange}
+        <motion.div
+          className="bg-white/80 backdrop-blur-lg p-10 rounded-2xl shadow-2xl border border-white/50"
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="mb-8 text-center">
+            <motion.h1 
+              className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
+              Create Account
+            </motion.h1>
+            <p className="text-gray-600">Join our community today</p>
+          </div>
 
-            <label className="block font-medium">Phone Number</label>
-            <input
-              type="text"
-              name="phone"
-              className="w-full p-2 border rounded mb-3"
-              placeholder="Enter phone number"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-
-            <label className="block font-medium">Email (College Email Required)</label>
-            <input
-              type="email"
-              name="email"
-              className="w-full p-2 border rounded mb-3"
-              placeholder="@iic.edu.np"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-
-            <label className="block font-medium">Role</label>
-            <select
-              name="role"
-              className="w-full p-2 border rounded mb-3"
-              value={formData.role}
-              onChange={handleChange}
+          {error && (
+            <motion.div 
+              className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-4 flex items-center gap-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
             >
-              <option value="User">User</option>
-              <option value="Admin">Admin</option>
-            </select>
+              <span className="text-xl">⚠️</span> {error}
+            </motion.div>
+          )}
+          {success && (
+            <motion.div 
+              className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-4 flex items-center gap-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <span className="text-xl">✅</span> {success}
+            </motion.div>
+          )}
 
-            <label className="block font-medium">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="w-full p-2 border rounded mb-3"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+          <motion.form onSubmit={handleSubmit} variants={containerVariants} initial="hidden" animate="visible">
+            <motion.div className="mb-5" variants={itemVariants}>
+              <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Full Name</label>
+              <div className="relative">
+                <HiOutlineUser className="absolute left-3 top-3.5 text-gray-400 text-lg" />
+                <input
+                  type="text"
+                  name="name"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  placeholder="Your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </motion.div>
 
-            <label className="block font-medium">Confirm Password</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              className="w-full p-2 border rounded mb-4"
-              placeholder="Confirm password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
+            <motion.div className="grid md:grid-cols-2 gap-4 mb-5" variants={itemVariants}>
+              <div>
+                <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Gender</label>
+                <select
+                  name="gender"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  value={formData.gender}
+                  onChange={handleChange}
+                >
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
 
-            <button
+              <div>
+                <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Phone</label>
+                <div className="relative">
+                  <HiOutlinePhone className="absolute left-3 top-3.5 text-gray-400 text-lg" />
+                  <input
+                    type="text"
+                    name="phone"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                    placeholder="Your phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div className="mb-5" variants={itemVariants}>
+              <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">College Email</label>
+              <div className="relative">
+                <HiOutlineMail className="absolute left-3 top-3.5 text-gray-400 text-lg" />
+                <input
+                  type="email"
+                  name="email"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  placeholder="yourname@iic.edu.np"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </motion.div>
+
+            <motion.div className="mb-5" variants={itemVariants}>
+              <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Role</label>
+              <select
+                name="role"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                value={formData.role}
+                onChange={handleChange}
+              >
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </motion.div>
+
+            <motion.div className="grid md:grid-cols-2 gap-4 mb-5" variants={itemVariants}>
+              <div>
+                <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Password</label>
+                <div className="relative">
+                  <HiOutlineLockClosed className="absolute left-3 top-3.5 text-gray-400 text-lg" />
+                  <input
+                    type="password"
+                    name="password"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                    placeholder="Min 6 characters"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Confirm</label>
+                <div className="relative">
+                  <HiOutlineLockClosed className="absolute left-3 top-3.5 text-gray-400 text-lg" />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                    placeholder="Confirm password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.button
               type="submit"
-              className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              Submit
-            </button>
+              {loading ? "Creating Account..." : "Create Account"}
+            </motion.button>
 
-            <p className="text-sm mt-3 text-center">
-              Already have an account?{" "}
-              <a href="/login" className="text-blue-600 hover:underline font-semibold">
-                Sign in
+            <motion.p className="text-sm mt-6 text-center text-gray-600" variants={itemVariants}>
+              Already registered?{" "}
+              <a
+                href="/login"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold hover:underline"
+              >
+                Sign in here
               </a>
+            </motion.p>
+          </motion.form>
+        </motion.div>
+
+        <motion.div
+          className="flex flex-col gap-6 w-full"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.7 }}
+        >
+          <motion.div
+            className="relative rounded-2xl overflow-hidden h-[350px] shadow-2xl"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.7 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <img
+              src={laptopImage}
+              alt="Lost & Found"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          </motion.div>
+
+          <motion.div
+            className="p-8 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-xl rounded-2xl border border-white/40 text-center shadow-lg"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">
+              🎯 Your Journey Starts Here
+            </h2>
+            <p className="text-gray-700 leading-relaxed">
+              Join thousands of users who've successfully reunited with their lost items. Our intelligent platform makes finding your belongings faster and easier than ever before. With just a few clicks, you'll be connected to a caring community dedicated to helping you recover what matters most.
             </p>
-          </form>
-        </div>
-
-<div className="flex flex-col gap-6 w-full">
-  
-  <div className="relative rounded-xl overflow-hidden h-[350px]">
-    <img
-      src={laptopImage}
-      alt="Lost & Found"
-      className="w-full h-full object-cover rounded-xl"
-    />
-  </div>
-
-  <div className="p-6 bg-white/40 backdrop-blur-md rounded-xl border border-white/20 text-center max-w-2xl mx-auto">
-    <h2 className="text-xl font-bold mb-2">
-      Welcome to Our Lost and Found Website!
-    </h2>
-    <p className="text-sm">
-      We're excited to help you find and recover lost items. Easily report lost 
-      belongings, search for found items, and connect with others. Our user-friendly 
-      platform aims to reunite you with your lost possessions quickly and efficiently.
-      <br /><br />
-      Thank you for choosing our service. If you need assistance, feel free to 
-      contact us.
-      <br /><br />
-      Happy searching and best of luck!
-    </p>
-  </div>
-
-</div>
-
-
-
+          </motion.div>
+        </motion.div>
       </div>
+
       <Footer />
     </div>
+    </>
   );
 }

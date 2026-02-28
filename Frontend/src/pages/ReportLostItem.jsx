@@ -1,0 +1,246 @@
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { HiOutlineArrowLeft } from "react-icons/hi";
+import Navbar from "../component/Navbar";
+import Footer from "../component/Footer";
+import { useAuth } from "../context/AuthContext.jsx";
+import { itemAPI } from "../services/api.js";
+
+export default function ReportLostItem() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    description: "",
+    location: "",
+    contactPhone: "",
+    contactEmail: user?.email || "",
+  });
+
+  const categories = [
+    "Electronics", "Documents", "Jewelry", "Keys", "Wallet/Purse", 
+    "Phone", "Bag", "Clothing", "Accessories", "Other"
+  ];
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!formData.title || !formData.category || !formData.description || !formData.location) {
+      setError("Please fill all required fields");
+      return;
+    }
+
+    if (!user || !user.id) {
+      setError("You must be logged in to report an item");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await itemAPI.createItem({
+        userId: user.id,
+        title: formData.title,
+        category: formData.category,
+        description: formData.description,
+        itemType: "Lost",
+        location: formData.location,
+        contactPhone: formData.contactPhone,
+        contactEmail: formData.contactEmail,
+      });
+
+      if (response.success) {
+        setSuccess("Lost item reported successfully!");
+        setTimeout(() => navigate("/my-reports"), 1500);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to report item");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8 px-6">
+        <div className="max-w-4xl mx-auto">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 mb-4 hover:opacity-80 transition"
+          >
+            <HiOutlineArrowLeft className="text-2xl" /> Back
+          </button>
+          <h1 className="text-4xl font-bold">Report Lost Item</h1>
+          <p className="mt-2 text-red-100">Help us find your lost belonging</p>
+        </div>
+      </div>
+
+      {/* Form Section */}
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <motion.div
+          className="bg-white rounded-2xl shadow-2xl p-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          {error && (
+            <motion.div
+              className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {error}
+            </motion.div>
+          )}
+          {success && (
+            <motion.div
+              className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {success}
+            </motion.div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <motion.div 
+              className="grid md:grid-cols-2 gap-6 mb-8"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {/* Item Name */}
+              <motion.div variants={itemVariants}>
+                <label className="block font-bold text-gray-700 mb-2">Item Name *</label>
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="e.g., Black Backpack"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                />
+              </motion.div>
+
+              {/* Category */}
+              <motion.div variants={itemVariants}>
+                <label className="block font-bold text-gray-700 mb-2">Category *</label>
+                <select
+                  name="category"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select category</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </motion.div>
+
+              {/* Location */}
+              <motion.div variants={itemVariants}>
+                <label className="block font-bold text-gray-700 mb-2">Lost Location *</label>
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Where did you lose it?"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                />
+              </motion.div>
+
+              {/* Phone */}
+              <motion.div variants={itemVariants}>
+                <label className="block font-bold text-gray-700 mb-2">Contact Phone *</label>
+                <input
+                  type="tel"
+                  name="contactPhone"
+                  placeholder="Your phone number"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition"
+                  value={formData.contactPhone}
+                  onChange={handleChange}
+                  required
+                />
+              </motion.div>
+
+              {/* Email */}
+              <motion.div variants={itemVariants}>
+                <label className="block font-bold text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  name="contactEmail"
+                  placeholder="Your email"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition"
+                  value={formData.contactEmail}
+                  onChange={handleChange}
+                />
+              </motion.div>
+            </motion.div>
+
+            {/* Description */}
+            <motion.div variants={itemVariants} className="mb-8">
+              <label className="block font-bold text-gray-700 mb-2">Description *</label>
+              <textarea
+                name="description"
+                placeholder="Describe the item in detail (color, brand, distinctive features, etc.)"
+                rows="5"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition resize-none"
+                value={formData.description}
+                onChange={handleChange}
+                required
+              />
+            </motion.div>
+
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold py-4 rounded-lg hover:shadow-lg transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {loading ? "Reporting..." : "Report Lost Item"}
+            </motion.button>
+          </form>
+        </motion.div>
+      </div>
+
+      <Footer />
+    </div>
+    </>
+  );
+}

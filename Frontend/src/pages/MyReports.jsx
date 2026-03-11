@@ -34,9 +34,9 @@ export default function MyReports() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8 px-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-8 px-6">
         <div className="max-w-6xl mx-auto">
           <button 
             onClick={() => navigate(-1)}
@@ -59,19 +59,19 @@ export default function MyReports() {
         >
           <motion.button
             onClick={() => navigate("/report-lost")}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition"
+            className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            📝 Report Lost Item
+            Report Lost Item
           </motion.button>
           <motion.button
             onClick={() => navigate("/report-found")}
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-700 transition"
+            className="bg-black text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-800 transition"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            🎁 Report Found Item
+            Report Found Item
           </motion.button>
         </motion.div>
 

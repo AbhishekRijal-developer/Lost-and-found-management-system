@@ -74,7 +74,7 @@ export default function Login() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white p-6">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
 
         <motion.div
@@ -126,7 +126,7 @@ export default function Login() {
         >
           <div className="mb-8 text-center">
             <motion.h2 
-              className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2"
+              className="text-4xl font-bold text-green-600 mb-2"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -163,7 +163,7 @@ export default function Login() {
                   type="email"
                   name="email"
                   placeholder="yourname@iic.edu.np"
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -179,7 +179,7 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Enter your password"
-                  className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -197,7 +197,7 @@ export default function Login() {
             <motion.button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -208,7 +208,7 @@ export default function Login() {
             <motion.div className="mt-6 space-y-3" variants={itemVariants}>
               <p className="text-center text-sm text-gray-600">
                 Don't have an account?{" "}
-                <a href="/" className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold hover:underline">
+                <a href="/" className="text-green-600 font-bold hover:underline">
                   Create one now
                 </a>
               </p>
@@ -232,7 +232,7 @@ export default function Login() {
             transition={{ delay: 0.5 }}
           >
             <p className="text-xs text-gray-500 text-center">
-              🔒 Your data is secure and encrypted
+              Your data is secure and encrypted
             </p>
           </motion.div>
         </motion.div>

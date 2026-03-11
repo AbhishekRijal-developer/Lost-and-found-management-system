@@ -23,46 +23,46 @@ export default function Home() {
 
   const features = [
     {
-      icon: "📝",
+      icon: "✏️",
       title: "Report Lost Item",
       desc: "Report your lost belongings",
       route: "/report-lost",
-      color: "from-red-500 to-pink-500"
+      color: "from-gray-700 to-gray-800"
     },
     {
-      icon: "🎁",
+      icon: "✓",
       title: "Report Found Item",
       desc: "Help others by reporting found items",
       route: "/report-found",
-      color: "from-green-500 to-emerald-500"
+      color: "from-green-600 to-green-700"
     },
     {
-      icon: "🔍",
+      icon: "🔎",
       title: "Browse Lost Items",
       desc: "Search lost items database",
       route: "/lost-items",
-      color: "from-blue-500 to-cyan-500"
+      color: "from-black to-gray-800"
     },
     {
-      icon: "✨",
+      icon: "★",
       title: "Browse Found Items",
       desc: "Check found items",
       route: "/found-items",
-      color: "from-purple-500 to-pink-500"
+      color: "from-green-600 to-green-700"
     },
     {
-      icon: "📋",
+      icon: "□",
       title: "My Reports",
       desc: "View your posted reports",
       route: "/my-reports",
-      color: "from-orange-500 to-red-500"
+      color: "from-gray-700 to-gray-800"
     },
     {
       icon: "👤",
       title: "My Profile",
       desc: "Manage your account",
       route: "/profile",
-      color: "from-indigo-500 to-purple-500"
+      color: "from-green-600 to-green-700"
     }
   ];
 
@@ -76,7 +76,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white">
         {/* Hero Section */}
         <motion.div 
           className="max-w-7xl mx-auto px-6 py-16 text-center"
@@ -84,13 +84,13 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
         >
         <motion.h2 
-          className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+          className="text-5xl md:text-6xl font-bold mb-4 text-green-600"
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
         >
           Welcome Home!
         </motion.h2>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <p className="text-xl text-gray-700 max-w-2xl mx-auto">
           Find your lost items or help others recover theirs. Our community-driven platform makes it easy.
         </p>
       </motion.div>
@@ -109,10 +109,10 @@ export default function Home() {
             variants={itemVariants}
             whileHover={{ y: -5 }}
           >
-            <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <p className="text-4xl font-bold text-green-600 mb-2">
               {stat.value}
             </p>
-            <p className="text-gray-600 font-semibold">{stat.label}</p>
+            <p className="text-gray-700 font-semibold">{stat.label}</p>
           </motion.div>
         ))}
       </motion.div>
@@ -124,7 +124,7 @@ export default function Home() {
         initial="hidden"
         animate="visible"
       >
-        <h3 className="text-3xl font-bold text-center mb-12 text-gray-800">What would you like to do?</h3>
+        <h3 className="text-3xl font-bold text-center mb-12 text-black">What would you like to do?</h3>
         
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, idx) => (
@@ -155,17 +155,17 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        <h3 className="text-3xl font-bold mb-8 text-gray-800">Recently Posted</h3>
+        <h3 className="text-3xl font-bold mb-8 text-black">Recently Posted</h3>
         <div className="grid md:grid-cols-3 gap-6">
           {[1, 2, 3].map((idx) => (
             <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="h-48 bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center text-6xl">
-                📦
+              <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center text-6xl">
+                □
               </div>
               <div className="p-6">
                 <h4 className="font-bold text-lg mb-2">Lost: Blue Wallet</h4>
                 <p className="text-gray-600 text-sm mb-4">Posted 2 hours ago near City Center</p>
-                <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                <button className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
                   View Details
                 </button>
               </div>

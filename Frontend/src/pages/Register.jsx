@@ -90,7 +90,7 @@ export default function Register() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white p-6">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
 
         <motion.div
@@ -101,7 +101,7 @@ export default function Register() {
         >
           <div className="mb-8 text-center">
             <motion.h1 
-              className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2"
+              className="text-4xl font-bold text-green-600 mb-2"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -151,7 +151,7 @@ export default function Register() {
                 <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Gender</label>
                 <select
                   name="gender"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                   value={formData.gender}
                   onChange={handleChange}
                 >
@@ -169,7 +169,7 @@ export default function Register() {
                   <input
                     type="text"
                     name="phone"
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                     placeholder="Your phone"
                     value={formData.phone}
                     onChange={handleChange}
@@ -185,7 +185,7 @@ export default function Register() {
                 <input
                   type="email"
                   name="email"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                   placeholder="yourname@iic.edu.np"
                   value={formData.email}
                   onChange={handleChange}
@@ -198,7 +198,7 @@ export default function Register() {
               <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Role</label>
               <select
                 name="role"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                 value={formData.role}
                 onChange={handleChange}
               >
@@ -215,7 +215,7 @@ export default function Register() {
                   <input
                     type="password"
                     name="password"
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                     placeholder="Min 6 characters"
                     value={formData.password}
                     onChange={handleChange}
@@ -231,7 +231,7 @@ export default function Register() {
                   <input
                     type="password"
                     name="confirmPassword"
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition bg-gray-50 hover:bg-white"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
                     placeholder="Confirm password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
@@ -244,7 +244,7 @@ export default function Register() {
             <motion.button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -256,7 +256,7 @@ export default function Register() {
               Already registered?{" "}
               <a
                 href="/login"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold hover:underline"
+                className="text-green-600 font-bold hover:underline"
               >
                 Sign in here
               </a>
@@ -286,13 +286,13 @@ export default function Register() {
           </motion.div>
 
           <motion.div
-            className="p-8 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-xl rounded-2xl border border-white/40 text-center shadow-lg"
+            className="p-8 bg-gradient-to-br from-green-100/20 to-green-200/20 backdrop-blur-xl rounded-2xl border border-green-200/40 text-center shadow-lg"
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.7 }}
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-3">
-              🎯 Your Journey Starts Here
+              Your Journey Starts Here
             </h2>
             <p className="text-gray-700 leading-relaxed">
               Join thousands of users who've successfully reunited with their lost items. Our intelligent platform makes finding your belongings faster and easier than ever before. With just a few clicks, you'll be connected to a caring community dedicated to helping you recover what matters most.

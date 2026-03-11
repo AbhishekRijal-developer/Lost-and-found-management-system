@@ -38,9 +38,9 @@ export default function ItemDetails() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8 px-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-8 px-6">
         <div className="max-w-6xl mx-auto">
           <button 
             onClick={() => navigate(-1)}
@@ -63,7 +63,7 @@ export default function ItemDetails() {
           {/* Images Section */}
           <motion.div className="md:col-span-2" variants={itemVariants}>
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-              <div className="h-96 bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center text-9xl">
+              <div className="h-96 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center text-9xl">
                 {itemData.image}
               </div>
               <div className="p-6">
@@ -72,7 +72,7 @@ export default function ItemDetails() {
                   {itemData.images.map((img, idx) => (
                     <div
                       key={idx}
-                      className="h-24 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center text-4xl cursor-pointer hover:shadow-lg transition"
+                      className="h-24 bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center text-4xl cursor-pointer hover:shadow-lg transition"
                     >
                       {img}
                     </div>
@@ -114,15 +114,15 @@ export default function ItemDetails() {
               <h3 className="text-2xl font-bold text-gray-800 mb-6">Reporter Info</h3>
               
               <div className="mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
                   👤
                 </div>
                 <p className="text-center font-bold text-gray-800 text-lg">{itemData.reporterName}</p>
               </div>
 
               <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
-                  <HiOutlinePhone className="text-purple-600 text-2xl" />
+                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
+                  <HiOutlinePhone className="text-green-600 text-2xl" />
                   <div>
                     <p className="text-sm text-gray-600">Phone</p>
                     <p className="font-semibold text-gray-800">{itemData.reporterPhone}</p>
@@ -139,7 +139,7 @@ export default function ItemDetails() {
 
               <motion.button
                 onClick={() => alert("Message sent to reporter!")}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition mb-3"
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 rounded-lg hover:shadow-lg transition mb-3"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -148,7 +148,7 @@ export default function ItemDetails() {
 
               <motion.button
                 onClick={() => alert("Call initiated!")}
-                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition"
+                className="w-full bg-gradient-to-r from-black to-gray-700 text-white font-bold py-3 rounded-lg hover:shadow-lg transition"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >

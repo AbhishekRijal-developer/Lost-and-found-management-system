@@ -29,7 +29,7 @@ export default function AboutUsPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col">
+      <div className="min-h-screen w-full bg-gradient-to-br from-white via-green-50 to-white flex flex-col">
 
       {/* Header Section */}
       <motion.div 
@@ -39,7 +39,7 @@ export default function AboutUsPage() {
         transition={{ duration: 0.6 }}
       >
         <motion.h1 
-          className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4"
+          className="text-5xl md:text-6xl font-bold text-green-600 mb-4"
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
         >
@@ -48,7 +48,6 @@ export default function AboutUsPage() {
         <p className="text-gray-600 text-lg">Discover our mission and meet our amazing team</p>
       </motion.div>
 
-<<<<<<< HEAD
       {/* Main Content */}
       <div className="flex-1 w-full max-w-7xl mx-auto px-6 pb-10">
         
@@ -60,7 +59,7 @@ export default function AboutUsPage() {
           animate="visible"
         >
           <motion.div 
-            className="bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 text-white rounded-3xl p-12 shadow-2xl overflow-hidden relative"
+            className="bg-gradient-to-br from-green-600 to-green-700 text-white rounded-3xl p-12 shadow-2xl overflow-hidden relative"
             variants={itemVariants}
             whileHover={{ scale: 1.02 }}
           >
@@ -72,7 +71,7 @@ export default function AboutUsPage() {
                 className="text-4xl font-bold mb-6 flex items-center gap-3"
                 variants={itemVariants}
               >
-                <span className="text-5xl">🎯</span> Our Mission
+                <span className="text-5xl">✓</span> Our Mission
               </motion.h2>
               <motion.p 
                 className="text-lg leading-relaxed max-w-2xl"
@@ -98,10 +97,10 @@ export default function AboutUsPage() {
           animate="visible"
         >
           <motion.h2 
-            className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            className="text-4xl font-bold text-center mb-12 text-green-600"
             variants={itemVariants}
           >
-            Meet Our Team ✨
+            Meet Our Team
           </motion.h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -114,27 +113,17 @@ export default function AboutUsPage() {
               >
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow">
                   {/* Avatar */}
-                  <div className="w-full h-48 bg-gradient-to-br from-purple-400 via-pink-400 to-rose-400 flex items-center justify-center relative overflow-hidden">
+                  <div className="w-full h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative overflow-hidden">
                     <div className="w-32 h-32 bg-white/30 rounded-full flex items-center justify-center text-5xl backdrop-blur-sm">
                       👤
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-transparent group-hover:from-black/20 transition-all"></div>
                   </div>
-=======
-        <h1 className="text-center text-3xl font-semibold py-10">About us</h1>
-
-        <div className="bg-gradient-to-b from-white to-[#ffb3b3] pt-10 pb-20 px-10">
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 justify-items-center">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="flex flex-col items-center">
-                <div className="w-44 h-44 bg-gray-300 rounded-full"></div>
->>>>>>> 0baab13aa6b18f58a9185116ea8225fcd4960a23
 
                   {/* Content */}
                   <div className="p-6 text-center">
                     <h3 className="text-xl font-bold text-gray-800 mb-1">{member.name}</h3>
-                    <p className="text-purple-600 font-semibold mb-4">{member.role}</p>
+                    <p className="text-green-600 font-semibold mb-4">{member.role}</p>
                     
                     {/* Social Links */}
                     <div className="flex justify-center gap-4 pt-4 border-t border-gray-200">
@@ -175,10 +164,10 @@ export default function AboutUsPage() {
           animate="visible"
         >
           <motion.h2 
-            className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            className="text-4xl font-bold text-center mb-12 text-green-600"
             variants={itemVariants}
           >
-            Why Choose Us? 💡
+            Why Choose Us?
           </motion.h2>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -203,7 +192,7 @@ export default function AboutUsPage() {
 
         {/* Statistics Section */}
         <motion.div
-          className="mb-16 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-rose-600/10 rounded-3xl p-10"
+          className="mb-16 bg-gradient-to-r from-green-100/30 to-green-200/30 rounded-3xl p-10"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -217,7 +206,7 @@ export default function AboutUsPage() {
             ].map((stat, idx) => (
               <motion.div key={idx} variants={itemVariants}>
                 <motion.p 
-                  className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2"
+                  className="text-4xl font-bold text-green-600 mb-2"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5 + idx * 0.1 }}
@@ -230,8 +219,7 @@ export default function AboutUsPage() {
           </div>
         </motion.div>
 
-<<<<<<< HEAD
-=======
+
         <div className="bg-black text-white rounded-lg mx-auto my-10 px-10 py-8 w-[90%] sm:w-[80%] shadow-xl">
           <h2 className="text-center text-2xl font-semibold mb-4">Our mission</h2>
           <p className="text-center text-sm leading-relaxed">
@@ -246,8 +234,8 @@ export default function AboutUsPage() {
       </div>
 
       <div className="w-full mt-10">
-        <Footer />
->>>>>>> 0baab13aa6b18f58a9185116ea8225fcd4960a23
+       
+
       </div>
 
       <Footer />

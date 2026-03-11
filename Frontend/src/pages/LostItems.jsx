@@ -60,9 +60,9 @@ export default function LostItems() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8 px-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-8 px-6">
         <div className="max-w-6xl mx-auto">
           <button 
             onClick={() => navigate(-1)}
@@ -88,7 +88,7 @@ export default function LostItems() {
             <input
               type="text"
               placeholder="Search by item name..."
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition"
+              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

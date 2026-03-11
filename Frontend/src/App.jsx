@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
+import AdminRoute from './component/AdminRoute.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import AboutUsPage from './pages/AboutUs.jsx'
@@ -13,6 +14,9 @@ import ItemDetails from './pages/ItemDetails.jsx'
 import MyReports from './pages/MyReports.jsx'
 import Profile from './pages/Profile.jsx'
 import ContactUs from './pages/ContactUs.jsx'
+import Chat from './pages/Chat.jsx'
+import AdminPanel from './pages/AdminPanel.jsx'
+import Debug from './pages/Debug.jsx'
 
 function App() {
   return (
@@ -39,6 +43,17 @@ function App() {
         {/* User Pages */}
         <Route path="/my-reports" element={<MyReports />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/chat" element={<Chat />} />
+        
+        {/* Debug Page */}
+        <Route path="/debug" element={<Debug />} />
+        
+        {/* Admin Pages */}
+        <Route path="/admin-panel" element={
+          <AdminRoute>
+            <AdminPanel />
+          </AdminRoute>
+        } />
       </Routes>
     </Router>
     </AuthProvider>

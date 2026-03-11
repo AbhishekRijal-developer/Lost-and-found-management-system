@@ -1,6 +1,6 @@
 -- Create Database
-CREATE DATABASE IF NOT EXISTS lost_found_db;
-USE lost_found_db;
+CREATE DATABASE IF NOT EXISTS lostandfound;
+USE lostandfound;
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (
@@ -56,7 +56,42 @@ CREATE TABLE IF NOT EXISTS matches (
   INDEX idx_userId (userId)
 );
 
+-- Chat Messages Table
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  itemId INT NOT NULL,
+  senderId INT NOT NULL,
+  receiverId INT NOT NULL,
+  message TEXT NOT NULL,
+  isRead BOOLEAN DEFAULT FALSE,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (itemId) REFERENCES items(id) ON DELETE CASCADE,
+  FOREIGN KEY (senderId) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (receiverId) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_itemId (itemId),
+  INDEX idx_senderId (senderId),
+  INDEX idx_receiverId (receiverId),
+  INDEX idx_createdAt (createdAt)
+);
+
+-- Notifications Table
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  userId INT NOT NULL,
+  itemId INT NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  message TEXT NOT NULL,
+  isRead BOOLEAN DEFAULT FALSE,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (itemId) REFERENCES items(id) ON DELETE CASCADE,
+  INDEX idx_userId (userId),
+  INDEX idx_isRead (isRead)
+);
+
 -- Sample Users (for testing)
 INSERT INTO users (name, email, password, phone, role) VALUES 
 ('Admin User', 'admin@iic.edu.np', '$2a$10$YjJjZGM4MjNhMmU4Nzc4YuZhBW5WzGvKjZcR8Q8vI2O1H7T2i', '9800000001', 'Admin'),
 ('Test User', 'test@iic.edu.np', '$2a$10$YjJjZGM4MjNhMmU4Nzc4YuZhBW5WzGvKjZcR8Q8vI2O1H7T2i', '9800000002', 'User');
+
+

@@ -46,9 +46,9 @@ export default function Profile() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8 px-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-8 px-6">
         <div className="max-w-6xl mx-auto">
           <button 
             onClick={() => navigate(-1)}
@@ -75,17 +75,17 @@ export default function Profile() {
           >
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               {/* Cover */}
-              <div className="h-32 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"></div>
+              <div className="h-32 bg-gradient-to-r from-green-500 to-green-600"></div>
 
               {/* Profile Info */}
               <div className="px-8 pb-8">
                 <div className="flex items-end gap-4 -mt-16 mb-6">
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 rounded-full flex items-center justify-center text-6xl border-4 border-white shadow-lg">
+                  <div className="w-32 h-32 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-6xl border-4 border-white shadow-lg">
                     👤
                   </div>
                   <motion.button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition"
+                    className="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 transition"
                     whileHover={{ scale: 1.05 }}
                   >
                     {isEditing ? "Cancel" : "Edit Profile"}
@@ -167,7 +167,7 @@ export default function Profile() {
                   {isEditing && (
                     <motion.button
                       onClick={handleSave}
-                      className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition"
+                      className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 rounded-lg hover:shadow-lg transition"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -189,7 +189,7 @@ export default function Profile() {
                   variants={itemVariants}
                   whileHover={{ y: -5 }}
                 >
-                  <p className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  <p className="text-4xl font-bold text-green-600 mb-2">
                     {stat.value}
                   </p>
                   <p className="text-gray-600 font-semibold">{stat.label}</p>
@@ -199,7 +199,7 @@ export default function Profile() {
               {/* Actions */}
               <motion.button
                 onClick={() => navigate("/my-reports")}
-                className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition"
+                className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition"
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
               >

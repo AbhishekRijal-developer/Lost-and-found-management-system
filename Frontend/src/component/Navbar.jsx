@@ -1,12 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { HiOutlineSearch, HiOutlineUser, HiOutlineLogout, HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import { HiOutlineSearch, HiOutlineUser, HiOutlineLogout, HiOutlineMenu, HiOutlineX, HiOutlineShieldCheck, HiOutlineChatAlt2 } from "react-icons/hi";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -29,8 +31,8 @@ export default function Navbar() {
             className="cursor-pointer"
             whileHover={{ scale: 1.05 }}
           >
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
-              🔍 Lost & Found
+            <h1 className="text-2xl font-bold text-green-600 flex items-center gap-2">
+              Lost & Found
             </h1>
           </motion.div>
 
@@ -42,8 +44,8 @@ export default function Navbar() {
                 onClick={() => navigate(link.path)}
                 className={`font-semibold transition ${
                   isActive(link.path)
-                    ? "text-purple-600 border-b-2 border-purple-600"
-                    : "text-gray-600 hover:text-purple-600"
+                    ? "text-green-600 border-b-2 border-green-600"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
                 whileHover={{ scale: 1.05 }}
               >
@@ -54,9 +56,25 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-4">
+            {user?.role === 'Admin' && (
+              <motion.button
+                onClick={() => navigate("/admin-panel")}
+                className="flex items-center gap-2 px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-lg transition"
+                whileHover={{ scale: 1.05 }}
+              >
+                <HiOutlineShieldCheck className="text-xl" /> Admin
+              </motion.button>
+            )}
+            <motion.button
+              onClick={() => navigate("/chat")}
+              className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+              whileHover={{ scale: 1.05 }}
+            >
+              <HiOutlineChatAlt2 className="text-xl" /> Chat
+            </motion.button>
             <motion.button
               onClick={() => navigate("/profile")}
-              className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition"
+              className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition"
               whileHover={{ scale: 1.05 }}
             >
               <HiOutlineUser className="text-xl" /> Profile
@@ -66,7 +84,7 @@ export default function Navbar() {
                 alert("Logged out!");
                 navigate("/login");
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
               whileHover={{ scale: 1.05 }}
             >
               <HiOutlineLogout className="text-xl" /> Logout
@@ -77,7 +95,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <motion.button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-600 hover:text-purple-600 text-2xl"
+              className="text-gray-700 hover:text-green-600 text-2xl"
               whileHover={{ scale: 1.1 }}
             >
               {isMobileMenuOpen ? <HiOutlineX /> : <HiOutlineMenu />}
@@ -101,22 +119,42 @@ export default function Navbar() {
                 }}
                 className={`block w-full text-left px-4 py-2 rounded-lg font-semibold transition ${
                   isActive(link.path)
-                    ? "bg-purple-100 text-purple-600"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-green-100 text-green-600"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`}
                 whileHover={{ scale: 1.02 }}
               >
                 {link.label}
               </motion.button>
             ))}
+            {user?.role === 'Admin' && (
+              <motion.button
+                onClick={() => {
+                  navigate("/admin-panel");
+                  setIsMobileMenuOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 rounded-lg font-semibold text-white bg-black hover:bg-gray-800 transition"
+              >
+                Admin Panel
+              </motion.button>
+            )}
+            <motion.button
+              onClick={() => {
+                navigate("/chat");
+                setIsMobileMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 rounded-lg font-semibold text-green-600 hover:bg-green-50 transition"
+            >
+              Chat
+            </motion.button>
             <motion.button
               onClick={() => {
                 navigate("/profile");
                 setIsMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 rounded-lg font-semibold text-purple-600 hover:bg-purple-50 transition"
+              className="block w-full text-left px-4 py-2 rounded-lg font-semibold text-green-600 hover:bg-green-50 transition"
             >
-              👤 Profile
+              Profile
             </motion.button>
             <motion.button
               onClick={() => {
@@ -124,9 +162,9 @@ export default function Navbar() {
                 navigate("/login");
                 setIsMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 rounded-lg font-semibold text-red-600 hover:bg-red-50 transition"
+              className="block w-full text-left px-4 py-2 rounded-lg font-semibold text-green-600 hover:bg-green-50 transition"
             >
-              🚪 Logout
+              Logout
             </motion.button>
           </motion.div>
         )}

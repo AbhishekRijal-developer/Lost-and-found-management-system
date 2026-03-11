@@ -48,9 +48,9 @@ export default function ReportFoundItem() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8 px-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-8 px-6">
         <div className="max-w-4xl mx-auto">
           <button 
             onClick={() => navigate(-1)}

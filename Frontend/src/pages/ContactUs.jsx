@@ -42,28 +42,28 @@ export default function ContactUs() {
       icon: HiOutlinePhone,
       title: "Phone",
       info: "+977-1-4123456",
-      color: "from-blue-500 via-purple-500 to-pink-500"
+      color: "from-green-600 to-green-700"
     },
     {
       icon: HiOutlineMail,
       title: "Email",
       info: "support@lostandfound.com",
-      color: "from-blue-500 to-purple-500"
+      color: "from-black to-gray-700"
     },
     {
       icon: HiOutlineLocationMarker,
       title: "Address",
       info: "Kathmandu, Nepal",
-      color: "from-purple-500 to-pink-500"
+      color: "from-green-600 to-green-700"
     },
   ];
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-8 px-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-8 px-6">
         <div className="max-w-6xl mx-auto">
           <button 
             onClick={() => navigate(-1)}

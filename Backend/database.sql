@@ -8,13 +8,16 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
+  resetPasswordToken VARCHAR(64) DEFAULT NULL,
+  resetPasswordExpires DATETIME DEFAULT NULL,
   phone VARCHAR(20),
   role ENUM('User', 'Admin') DEFAULT 'User',
   isActive BOOLEAN DEFAULT TRUE,
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_email (email),
-  INDEX idx_role (role)
+  INDEX idx_role (role),
+  INDEX idx_resetPasswordToken (resetPasswordToken)
 );
 
 -- Items Table (Lost & Found Items)

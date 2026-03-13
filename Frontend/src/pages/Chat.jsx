@@ -230,7 +230,7 @@ export default function Chat() {
           animate={{ opacity: 1, y: 0 }}
           className="mt-8 p-6 bg-green-900/20 border border-green-600/30 rounded-lg"
         >
-          <h3 className="text-lg font-bold text-green-400 mb-2">💬 How to Use Chat</h3>
+          <h3 className="text-lg font-bold text-green-400 mb-2">How to Use Chat</h3>
           <ul className="text-gray-300 space-y-2 text-sm">
             <li>✓ Select a conversation to view messages about a specific item</li>
             <li>✓ Chat with finders or seekers about lost and found items</li>

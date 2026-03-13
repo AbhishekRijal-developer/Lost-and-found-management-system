@@ -146,3 +146,96 @@ export const sendReportNotification = async (userEmail, itemTitle, itemType) => 
     return false;
   }
 };
+
+export const sendPasswordResetEmail = async (userEmail, userName, resetUrl) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Reset Your Password - Lost & Found System',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #2f855a; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h1>Lost & Found System</h1>
+            <p>Password Reset Request</p>
+          </div>
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px;">
+            <p>Hi <strong>${userName}</strong>,</p>
+            <p>We received a request to reset your password.</p>
+            <p style="margin: 24px 0; text-align: center;">
+              <a href="${resetUrl}" style="display: inline-block; background: #2f855a; color: #fff; padding: 12px 18px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+                Reset Password
+              </a>
+            </p>
+            <p>This link expires in <strong>15 minutes</strong>.</p>
+            <p>If you did not request this, you can ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+            <p style="text-align: center; color: #999; font-size: 12px;">
+              © 2026 Lost & Found Management System. All rights reserved.
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Password reset email sent to ${userEmail}`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error sending password reset email:', error.message);
+    return false;
+  }
+};
+
+export const sendContactMessage = async (name, email, subject, message) => {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+
+    const adminMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: adminEmail,
+      subject: `📨 Contact Form: ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #1f2937; color: white; padding: 16px; border-radius: 8px 8px 0 0;">
+            <h2 style="margin: 0;">New Contact Message</h2>
+          </div>
+          <div style="background: #f9fafb; padding: 16px; border-radius: 0 0 8px 8px;">
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Message:</strong></p>
+            <div style="white-space: pre-wrap; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px;">${message}</div>
+          </div>
+        </div>
+      `
+    };
+
+    const userConfirmationOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'We received your message - Lost & Found',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #2f855a; color: white; padding: 16px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h2 style="margin: 0;">Thanks for contacting us</h2>
+          </div>
+          <div style="background: #f9fafb; padding: 16px; border-radius: 0 0 8px 8px;">
+            <p>Hi <strong>${name}</strong>,</p>
+            <p>We received your message and our support team will respond soon.</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(adminMailOptions);
+    await transporter.sendMail(userConfirmationOptions);
+
+    console.log(`✅ Contact message sent from ${email}`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error sending contact message:', error.message);
+    return false;
+  }
+};

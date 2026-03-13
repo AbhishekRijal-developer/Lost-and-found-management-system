@@ -1,21 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { HiOutlineArrowLeft, HiOutlineTrash } from "react-icons/hi";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import { itemAPI } from "../services/api.js";
 
 export default function MyReports() {
   const navigate = useNavigate();
-  const [reports, setReports] = useState([
-    { id: 1, type: "lost", name: "Blue Wallet", category: "Wallet/Purse", date: "2 days ago", status: "Active", image: "💼" },
-    { id: 2, type: "found", name: "Silver Keys", category: "Keys", date: "1 week ago", status: "Resolved", image: "🔑" },
-    { id: 3, type: "lost", name: "iPhone 14", category: "Phone", date: "3 days ago", status: "Active", image: "📱" },
-  ]);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const handleDelete = (id) => {
-    setReports(reports.filter(report => report.id !== id));
-    alert("Report deleted successfully!");
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        setLoading(true);
+        const response = await itemAPI.getMyItems();
+        if (response.success) {
+          setReports(response.data);
+        }
+      } catch (err) {
+        setError(err.message || "Failed to load your reports");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await itemAPI.deleteItem(id);
+      setReports((prev) => prev.filter((report) => report.id !== id));
+      alert("Report deleted successfully!");
+    } catch (err) {
+      alert(err.message || "Failed to delete report");
+    }
   };
 
   const containerVariants = {
@@ -76,6 +98,12 @@ export default function MyReports() {
         </motion.div>
 
         {/* Reports List */}
+        {loading && (
+          <div className="text-center py-10 text-gray-600">Loading your reports...</div>
+        )}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6">{error}</div>
+        )}
         <motion.div
           className="space-y-6"
           variants={containerVariants}
@@ -91,27 +119,27 @@ export default function MyReports() {
               <div className="flex flex-col md:flex-row items-center gap-6 p-8">
                 {/* Image */}
                 <div className={`w-24 h-24 rounded-lg flex items-center justify-center text-5xl flex-shrink-0 ${
-                  report.type === "lost" ? "bg-red-100" : "bg-green-100"
+                  report.itemType === "Lost" ? "bg-red-100" : "bg-green-100"
                 }`}>
-                  {report.image}
+                  {report.itemType === "Lost" ? "🔴" : "🟢"}
                 </div>
 
                 {/* Details */}
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-2xl font-bold text-gray-800">{report.name}</h3>
+                    <h3 className="text-2xl font-bold text-gray-800">{report.title}</h3>
                     <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                      report.type === "lost" 
+                      report.itemType === "Lost" 
                         ? "bg-red-100 text-red-700" 
                         : "bg-green-100 text-green-700"
                     }`}>
-                      {report.type === "lost" ? "Lost" : "Found"}
+                      {report.itemType}
                     </span>
                   </div>
                   <p className="text-gray-600 mb-1">
                     <span className="font-semibold">Category:</span> {report.category}
                   </p>
-                  <p className="text-gray-500 text-sm">Reported {report.date}</p>
+                  <p className="text-gray-500 text-sm">Reported {new Date(report.createdAt).toLocaleDateString()}</p>
                   <div className="mt-3 flex items-center gap-4">
                     <span className={`px-3 py-1 rounded-full text-sm font-bold ${
                       report.status === "Active"
@@ -147,7 +175,7 @@ export default function MyReports() {
           ))}
         </motion.div>
 
-        {reports.length === 0 && (
+        {!loading && reports.length === 0 && (
           <motion.div
             className="text-center py-12"
             initial={{ opacity: 0 }}

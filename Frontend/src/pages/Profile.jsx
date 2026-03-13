@@ -1,33 +1,92 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import { authAPI } from "../services/api.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { login, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [userData, setUserData] = useState({
-    name: "John Doe",
-    email: "john@iic.edu.np",
-    phone: "+977-9841234567",
-    location: "Kathmandu, Nepal",
-    bio: "A helpful member of the Lost & Found community",
+    name: "",
+    email: "",
+    phone: "",
   });
 
   const [tempData, setTempData] = useState(userData);
 
-  const handleSave = () => {
-    setUserData(tempData);
-    setIsEditing(false);
-    alert("Profile updated successfully!");
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const response = await authAPI.getCurrentUser();
+        if (response.success) {
+          const profile = {
+            name: response.data.name || "",
+            email: response.data.email || "",
+            phone: response.data.phone || "",
+          };
+          setUserData(profile);
+          setTempData(profile);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const response = await authAPI.updateProfile({
+        name: tempData.name,
+        phone: tempData.phone,
+      });
+
+      if (response.success) {
+        const updatedUser = {
+          ...response.data,
+        };
+        setUserData({
+          name: updatedUser.name || "",
+          email: updatedUser.email || "",
+          phone: updatedUser.phone || "",
+        });
+        setTempData({
+          name: updatedUser.name || "",
+          email: updatedUser.email || "",
+          phone: updatedUser.phone || "",
+        });
+
+        const existingToken = localStorage.getItem("token");
+        if (existingToken) {
+          login(updatedUser, existingToken);
+        }
+
+        setIsEditing(false);
+        alert("Profile updated successfully!");
+      }
+    } catch (error) {
+      alert(error.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const stats = [
-    { label: "Total Reports", value: 12 },
-    { label: "Items Found", value: 5 },
-    { label: "Helpful Ratings", value: 48 },
+    { label: "Total Reports", value: "--" },
+    { label: "Items Found", value: "--" },
+    { label: "Helpful Ratings", value: "--" },
   ];
 
   const containerVariants = {
@@ -42,6 +101,18 @@ export default function Profile() {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-white flex items-center justify-center">
+          <p className="text-gray-700">Loading profile...</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -110,16 +181,7 @@ export default function Profile() {
 
                   <div>
                     <label className="block text-gray-700 font-bold mb-2">Email</label>
-                    {isEditing ? (
-                      <input
-                        type="email"
-                        value={tempData.email}
-                        onChange={(e) => setTempData({ ...tempData, email: e.target.value })}
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
-                      />
-                    ) : (
-                      <p className="text-gray-800">{userData.email}</p>
-                    )}
+                    <p className="text-gray-800">{userData.email}</p>
                   </div>
 
                   <div>
@@ -136,42 +198,15 @@ export default function Profile() {
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-gray-700 font-bold mb-2">Location</label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={tempData.location}
-                        onChange={(e) => setTempData({ ...tempData, location: e.target.value })}
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
-                      />
-                    ) : (
-                      <p className="text-gray-800">{userData.location}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 font-bold mb-2">Bio</label>
-                    {isEditing ? (
-                      <textarea
-                        value={tempData.bio}
-                        onChange={(e) => setTempData({ ...tempData, bio: e.target.value })}
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                        rows="3"
-                      />
-                    ) : (
-                      <p className="text-gray-800">{userData.bio}</p>
-                    )}
-                  </div>
-
                   {isEditing && (
                     <motion.button
                       onClick={handleSave}
+                      disabled={saving}
                       className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 rounded-lg hover:shadow-lg transition"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      Save Changes
+                      {saving ? "Saving..." : "Save Changes"}
                     </motion.button>
                   )}
                 </div>
@@ -203,7 +238,7 @@ export default function Profile() {
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
               >
-                📋 View My Reports
+                 View My Reports
               </motion.button>
 
               <motion.button
@@ -212,19 +247,19 @@ export default function Profile() {
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
               >
-                ⚙️ Settings
+                 Settings
               </motion.button>
 
               <motion.button
                 onClick={() => {
-                  alert("Logged out!");
+                  logout();
                   navigate("/login");
                 }}
                 className="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition"
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
               >
-                🚪 Logout
+                Logout
               </motion.button>
             </div>
           </motion.div>

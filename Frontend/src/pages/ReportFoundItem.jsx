@@ -4,9 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import { useAuth } from "../context/AuthContext.jsx";
+import { itemAPI } from "../services/api.js";
 
 export default function ReportFoundItem() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     itemName: "",
     category: "",
@@ -26,10 +32,44 @@ export default function ReportFoundItem() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Found item reported successfully!");
-    navigate("/my-reports");
+    setError("");
+    setSuccess("");
+
+    if (!user || !user.id) {
+      setError("You must be logged in to report an item");
+      navigate("/login");
+      return;
+    }
+
+    if (!formData.itemName || !formData.category || !formData.description || !formData.location || !formData.contact) {
+      setError("Please fill all required fields");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await itemAPI.createItem({
+        userId: user.id,
+        title: formData.itemName,
+        category: formData.category,
+        description: formData.description,
+        itemType: "Found",
+        location: formData.location,
+        contactPhone: formData.contact,
+        contactEmail: user.email,
+      });
+
+      if (response.success) {
+        setSuccess("Found item reported successfully!");
+        setTimeout(() => navigate("/my-reports"), 1200);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to report found item");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -70,6 +110,25 @@ export default function ReportFoundItem() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
+          {error && (
+            <motion.div
+              className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {error}
+            </motion.div>
+          )}
+          {success && (
+            <motion.div
+              className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {success}
+            </motion.div>
+          )}
+
           <form onSubmit={handleSubmit}>
             <motion.div 
               className="grid md:grid-cols-2 gap-6 mb-8"
@@ -178,12 +237,13 @@ export default function ReportFoundItem() {
             {/* Submit Button */}
             <motion.button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold py-4 rounded-lg hover:shadow-lg transition-all duration-300 text-lg"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold py-4 rounded-lg hover:shadow-lg transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              Report Found Item
+              {loading ? "Reporting..." : "Report Found Item"}
             </motion.button>
           </form>
         </motion.div>

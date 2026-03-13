@@ -4,12 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Get token from localStorage
 const getToken = () => {
-  const auth = localStorage.getItem('auth');
-  if (auth) {
-    const { token } = JSON.parse(auth);
-    return token;
-  }
-  return null;
+  return localStorage.getItem('token');
 };
 
 // Create axios instance with auth header

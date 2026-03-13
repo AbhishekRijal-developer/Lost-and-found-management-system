@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js';
 import itemRoutes from './routes/itemRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import { sendContactMessage } from './services/emailService.js';
 
 dotenv.config();
 
@@ -40,6 +41,39 @@ app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'name, email, subject and message are required'
+      });
+    }
+
+    const sent = await sendContactMessage(name, email, subject, message);
+
+    if (!sent) {
+      return res.status(500).json({
+        success: false,
+        message: 'Could not send message. Please try again later.'
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Message sent successfully'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error sending contact message',
+      error: error.message
+    });
+  }
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

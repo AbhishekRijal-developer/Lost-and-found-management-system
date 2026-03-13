@@ -157,7 +157,7 @@ export default function LostItems() {
                   {item.imageUrl ? (
                     <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                   ) : (
-                    <span>📦 No Image</span>
+                    <span> No Image</span>
                   )}
                 </div>
                 <div className="p-6">

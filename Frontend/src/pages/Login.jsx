@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import laptopImage from "../assets/laptop.png";
 import Navbar from "../component/Navbar";
@@ -106,7 +106,7 @@ export default function Login() {
             transition={{ duration: 0.7 }}
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              🔍 Welcome Back!
+               Welcome Back!
             </h2>
             <p className="text-gray-700 leading-relaxed mb-4">
               Sign in to access your account and manage your lost items. Search for your lost belongings, report new items, and connect with our community.
@@ -141,7 +141,7 @@ export default function Login() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <span className="text-xl">⚠️</span> {error}
+              <span className="text-xl"></span> {error}
             </motion.div>
           )}
           {success && (
@@ -150,7 +150,7 @@ export default function Login() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <span className="text-xl">✅</span> {success}
+              <span className="text-xl"></span> {success}
             </motion.div>
           )}
 
@@ -208,18 +208,18 @@ export default function Login() {
             <motion.div className="mt-6 space-y-3" variants={itemVariants}>
               <p className="text-center text-sm text-gray-600">
                 Don't have an account?{" "}
-                <a href="/" className="text-green-600 font-bold hover:underline">
+                <Link to="/register" className="text-green-600 font-bold hover:underline">
                   Create one now
-                </a>
+                </Link>
               </p>
 
               <p className="text-center">
-                <button 
-                  type="button"
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-cyan-600 hover:text-cyan-700 font-semibold hover:underline transition"
                 >
                   Forgot Password?
-                </button>
+                </Link>
               </p>
             </motion.div>
           </motion.form>

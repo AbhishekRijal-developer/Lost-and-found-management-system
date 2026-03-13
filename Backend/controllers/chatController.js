@@ -149,55 +149,83 @@ export const chatController = {
     try {
       const userId = req.user.id;
       const { page = 1, limit = 10 } = req.query;
-      const offset = (page - 1) * limit;
+      const parsedPage = parseInt(page, 10) || 1;
+      const parsedLimit = parseInt(limit, 10) || 10;
+      const offset = (parsedPage - 1) * parsedLimit;
 
       const connection = await pool.getConnection();
 
       try {
-        // Get unique conversations with latest message
         const query = `
-          SELECT DISTINCT 
-                 CASE 
-                   WHEN cm.senderId = ? THEN cm.receiverId 
-                   ELSE cm.senderId 
-                 END as otherUserId,
-                 u.name, u.email, u.phone,
-                 i.id as itemId, i.title as itemTitle, i.itemType,
-                 cm.message as lastMessage,
-                 cm.createdAt as lastMessageTime,
-                 SUM(CASE WHEN cm.receiverId = ? AND cm.isRead = 0 THEN 1 ELSE 0 END) as unreadCount
-          FROM chat_messages cm
-          JOIN users u ON (CASE 
-                            WHEN cm.senderId = ? THEN cm.receiverId 
-                            ELSE cm.senderId 
-                          END) = u.id
-          JOIN items i ON cm.itemId = i.id
-          WHERE cm.senderId = ? OR cm.receiverId = ?
-          GROUP BY otherUserId, cm.itemId
-          ORDER BY cm.createdAt DESC
-          LIMIT ? OFFSET ?
+          SELECT
+            c.otherUserId,
+            u.name,
+            u.email,
+            u.phone,
+            c.itemId,
+            i.title as itemTitle,
+            i.itemType,
+            lm.message as lastMessage,
+            lm.createdAt as lastMessageTime,
+            COALESCE(uc.unreadCount, 0) as unreadCount
+          FROM (
+            SELECT
+              x.itemId,
+              x.otherUserId,
+              MAX(x.id) as lastMessageId
+            FROM (
+              SELECT
+                cm.id,
+                cm.itemId,
+                CASE
+                  WHEN cm.senderId = ? THEN cm.receiverId
+                  ELSE cm.senderId
+                END as otherUserId
+              FROM chat_messages cm
+              WHERE cm.senderId = ? OR cm.receiverId = ?
+            ) x
+            GROUP BY x.itemId, x.otherUserId
+            ORDER BY MAX(x.id) DESC
+            LIMIT ? OFFSET ?
+          ) c
+          JOIN chat_messages lm ON lm.id = c.lastMessageId
+          JOIN users u ON u.id = c.otherUserId
+          JOIN items i ON i.id = c.itemId
+          LEFT JOIN (
+            SELECT
+              itemId,
+              senderId,
+              COUNT(*) as unreadCount
+            FROM chat_messages
+            WHERE receiverId = ? AND isRead = 0
+            GROUP BY itemId, senderId
+          ) uc ON uc.itemId = c.itemId AND uc.senderId = c.otherUserId
+          ORDER BY lm.id DESC
         `;
 
         const [conversations] = await connection.query(query, [
           userId,
           userId,
           userId,
-          userId,
-          userId,
-          parseInt(limit),
-          offset
+          parsedLimit,
+          offset,
+          userId
         ]);
 
         // Get total count
         const countQuery = `
-          SELECT COUNT(DISTINCT 
-                 CASE 
-                   WHEN senderId = ? THEN receiverId 
-                   ELSE senderId 
-                 END,
-                 itemId) as total
-          FROM chat_messages
-          WHERE senderId = ? OR receiverId = ?
+          SELECT COUNT(*) as total
+          FROM (
+            SELECT
+              itemId,
+              CASE
+                WHEN senderId = ? THEN receiverId
+                ELSE senderId
+              END as otherUserId
+            FROM chat_messages
+            WHERE senderId = ? OR receiverId = ?
+            GROUP BY itemId, otherUserId
+          ) c
         `;
         const [countResult] = await connection.query(countQuery, [userId, userId, userId]);
 
@@ -206,9 +234,9 @@ export const chatController = {
           data: conversations,
           pagination: {
             total: countResult[0].total,
-            page: parseInt(page),
-            limit: parseInt(limit),
-            pages: Math.ceil(countResult[0].total / limit)
+            page: parsedPage,
+            limit: parsedLimit,
+            pages: Math.ceil(countResult[0].total / parsedLimit)
           }
         });
       } finally {

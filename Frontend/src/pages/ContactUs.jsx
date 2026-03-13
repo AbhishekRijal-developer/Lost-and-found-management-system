@@ -4,9 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { HiOutlineArrowLeft, HiOutlinePhone, HiOutlineMail, HiOutlineLocationMarker } from "react-icons/hi";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import { contactAPI } from "../services/api.js";
 
 export default function ContactUs() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,10 +22,23 @@ export default function ContactUs() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setError("");
+    setSuccess("");
+
+    try {
+      setLoading(true);
+      const response = await contactAPI.sendMessage(formData);
+      if (response.success) {
+        setSuccess("Thank you for your message! We'll get back to you soon.");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      }
+    } catch (err) {
+      setError(err.message || "Failed to send your message");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -108,6 +125,13 @@ export default function ContactUs() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h2 className="text-3xl font-bold text-gray-800 mb-8">Send us a Message</h2>
+
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6">{error}</div>
+          )}
+          {success && (
+            <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6">{success}</div>
+          )}
           
           <form onSubmit={handleSubmit}>
             <motion.div 
@@ -176,12 +200,13 @@ export default function ContactUs() {
             {/* Submit Button */}
             <motion.button
               type="submit"
-              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold py-4 rounded-lg hover:shadow-lg transition-all duration-300 text-lg"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold py-4 rounded-lg hover:shadow-lg transition-all duration-300 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              Send Message
+              {loading ? "Sending..." : "Send Message"}
             </motion.button>
           </form>
         </motion.div>

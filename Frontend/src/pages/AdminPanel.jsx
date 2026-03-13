@@ -52,10 +52,19 @@ export default function AdminPanel() {
     });
   };
 
-  const handleDeleteItem = (id) => {
+  const handleDeleteItem = async (id) => {
     if (confirm('Are you sure you want to delete this item?')) {
-      setAllItems(allItems.filter(item => item.id !== id));
-      alert('Item deleted successfully!');
+      try {
+        const response = await itemAPI.deleteItem(id);
+        if (response.success) {
+          const updated = allItems.filter(item => item.id !== id);
+          setAllItems(updated);
+          calculateStats(updated);
+          alert('Item deleted successfully!');
+        }
+      } catch (error) {
+        alert(error.message || 'Failed to delete item');
+      }
     }
   };
 

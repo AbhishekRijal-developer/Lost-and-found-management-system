@@ -38,6 +38,10 @@ export const apiCall = async (endpoint, method = 'GET', data = null) => {
 export const authAPI = {
   register: (userData) => apiCall('/auth/register', 'POST', userData),
   login: (email, password) => apiCall('/auth/login', 'POST', { email, password }),
+  getCurrentUser: () => apiCall('/auth/me'),
+  updateProfile: (profileData) => apiCall('/auth/me', 'PUT', profileData),
+  forgotPassword: (email) => apiCall('/auth/forgot-password', 'POST', { email }),
+  resetPassword: (token, password) => apiCall('/auth/reset-password', 'POST', { token, password }),
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -50,9 +54,14 @@ export const itemAPI = {
   getItemById: (id) => apiCall(`/items/${id}`),
   createItem: (itemData) => apiCall('/items', 'POST', itemData),
   updateItem: (id, itemData) => apiCall(`/items/${id}`, 'PUT', itemData),
+  updateItemStatus: (id, status) => apiCall(`/items/${id}/status`, 'PATCH', { status }),
   deleteItem: (id) => apiCall(`/items/${id}`, 'DELETE'),
   getMyItems: () => apiCall('/items/user/my-items'),
-  searchItems: (query) => apiCall(`/items/search?q=${query}`),
+  searchItems: (query) => apiCall(`/items/search/query?q=${encodeURIComponent(query)}`),
+};
+
+export const contactAPI = {
+  sendMessage: (payload) => apiCall('/contact', 'POST', payload),
 };
 
 // Match/Claim APIs

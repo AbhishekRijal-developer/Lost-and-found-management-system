@@ -8,8 +8,13 @@ import { useAuth } from "../context/AuthContext.jsx";
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const authOnlyPaths = ["/login", "/register", "/forgot-password"];
+  const isAuthPage =
+    authOnlyPaths.includes(location.pathname) ||
+    location.pathname.startsWith("/reset-password/");
 
   const navLinks = [
     { label: "Home", path: "/home" },
@@ -37,74 +42,80 @@ export default function Navbar() {
           </motion.div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <motion.button
-                key={link.path}
-                onClick={() => navigate(link.path)}
-                className={`font-semibold transition ${
-                  isActive(link.path)
-                    ? "text-green-600 border-b-2 border-green-600"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-                whileHover={{ scale: 1.05 }}
-              >
-                {link.label}
-              </motion.button>
-            ))}
-          </div>
+          {!isAuthPage && isAuthenticated && (
+            <div className="hidden md:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <motion.button
+                  key={link.path}
+                  onClick={() => navigate(link.path)}
+                  className={`font-semibold transition ${
+                    isActive(link.path)
+                      ? "text-green-600 border-b-2 border-green-600"
+                      : "text-gray-700 hover:text-green-600"
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {link.label}
+                </motion.button>
+              ))}
+            </div>
+          )}
 
           {/* Right Actions */}
-          <div className="hidden md:flex items-center gap-4">
-            {user?.role === 'Admin' && (
+          {!isAuthPage && isAuthenticated && (
+            <div className="hidden md:flex items-center gap-4">
+              {user?.role === 'Admin' && (
+                <motion.button
+                  onClick={() => navigate("/admin-panel")}
+                  className="flex items-center gap-2 px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-lg transition"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <HiOutlineShieldCheck className="text-xl" /> Admin
+                </motion.button>
+              )}
               <motion.button
-                onClick={() => navigate("/admin-panel")}
-                className="flex items-center gap-2 px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-lg transition"
+                onClick={() => navigate("/chat")}
+                className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition"
                 whileHover={{ scale: 1.05 }}
               >
-                <HiOutlineShieldCheck className="text-xl" /> Admin
+                <HiOutlineChatAlt2 className="text-xl" /> Chat
               </motion.button>
-            )}
-            <motion.button
-              onClick={() => navigate("/chat")}
-              className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-              whileHover={{ scale: 1.05 }}
-            >
-              <HiOutlineChatAlt2 className="text-xl" /> Chat
-            </motion.button>
-            <motion.button
-              onClick={() => navigate("/profile")}
-              className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-              whileHover={{ scale: 1.05 }}
-            >
-              <HiOutlineUser className="text-xl" /> Profile
-            </motion.button>
-            <motion.button
-              onClick={() => {
-                alert("Logged out!");
-                navigate("/login");
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-              whileHover={{ scale: 1.05 }}
-            >
-              <HiOutlineLogout className="text-xl" /> Logout
-            </motion.button>
-          </div>
+              <motion.button
+                onClick={() => navigate("/profile")}
+                className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                whileHover={{ scale: 1.05 }}
+              >
+                <HiOutlineUser className="text-xl" /> Profile
+              </motion.button>
+              <motion.button
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                whileHover={{ scale: 1.05 }}
+              >
+                <HiOutlineLogout className="text-xl" /> Logout
+              </motion.button>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <motion.button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 hover:text-green-600 text-2xl"
-              whileHover={{ scale: 1.1 }}
-            >
-              {isMobileMenuOpen ? <HiOutlineX /> : <HiOutlineMenu />}
-            </motion.button>
-          </div>
+          {!isAuthPage && isAuthenticated && (
+            <div className="md:hidden">
+              <motion.button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-gray-700 hover:text-green-600 text-2xl"
+                whileHover={{ scale: 1.1 }}
+              >
+                {isMobileMenuOpen ? <HiOutlineX /> : <HiOutlineMenu />}
+              </motion.button>
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu */}
-        {isMobileMenuOpen && (
+        {!isAuthPage && isAuthenticated && isMobileMenuOpen && (
           <motion.div
             className="md:hidden mt-4 pb-4 space-y-2"
             initial={{ opacity: 0, y: -10 }}
@@ -158,7 +169,7 @@ export default function Navbar() {
             </motion.button>
             <motion.button
               onClick={() => {
-                alert("Logged out!");
+                logout();
                 navigate("/login");
                 setIsMobileMenuOpen(false);
               }}

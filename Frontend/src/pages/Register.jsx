@@ -116,7 +116,7 @@ export default function Register() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <span className="text-xl">⚠️</span> {error}
+              <span className="text-xl"></span> {error}
             </motion.div>
           )}
           {success && (
@@ -125,7 +125,7 @@ export default function Register() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <span className="text-xl">✅</span> {success}
+              <span className="text-xl"></span> {success}
             </motion.div>
           )}
 

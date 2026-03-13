@@ -172,9 +172,9 @@ export default function AboutUsPage() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: "🚀", title: "Fast & Efficient", desc: "Quick search and recovery process" },
-              { icon: "🤝", title: "Community Driven", desc: "Help from a caring community" },
-              { icon: "🔒", title: "Secure & Safe", desc: "Your data is protected" },
+              { icon: "", title: "Fast & Efficient", desc: "Quick search and recovery process" },
+              { icon: "", title: "Community Driven", desc: "Help from a caring community" },
+              { icon: "", title: "Secure & Safe", desc: "Your data is protected" },
             ].map((feature, idx) => (
               <motion.div
                 key={idx}

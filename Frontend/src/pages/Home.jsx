@@ -23,42 +23,42 @@ export default function Home() {
 
   const features = [
     {
-      icon: "✏️",
+      icon: "",
       title: "Report Lost Item",
       desc: "Report your lost belongings",
       route: "/report-lost",
       color: "from-gray-700 to-gray-800"
     },
     {
-      icon: "✓",
+      icon: "",
       title: "Report Found Item",
       desc: "Help others by reporting found items",
       route: "/report-found",
       color: "from-green-600 to-green-700"
     },
     {
-      icon: "🔎",
+      icon: "",
       title: "Browse Lost Items",
       desc: "Search lost items database",
       route: "/lost-items",
       color: "from-black to-gray-800"
     },
     {
-      icon: "★",
+      icon: "",
       title: "Browse Found Items",
       desc: "Check found items",
       route: "/found-items",
       color: "from-green-600 to-green-700"
     },
     {
-      icon: "□",
+      icon: "",
       title: "My Reports",
       desc: "View your posted reports",
       route: "/my-reports",
       color: "from-gray-700 to-gray-800"
     },
     {
-      icon: "👤",
+      icon: "",
       title: "My Profile",
       desc: "Manage your account",
       route: "/profile",

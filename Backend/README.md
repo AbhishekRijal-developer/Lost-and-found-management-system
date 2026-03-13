@@ -29,6 +29,11 @@ mysql -u root -p < database.sql
 - Open database.sql file
 - Execute the script
 
+If your database already exists, run this one-time migration for forgot-password support:
+```bash
+mysql -u root -p lostandfound < migrations/add-forgot-password-columns.sql
+```
+
 ### 3. Configure Environment Variables
 
 Edit `.env` file with your database credentials:
@@ -39,6 +44,7 @@ DB_PASSWORD=your_password
 DB_NAME=lost_found_db
 JWT_SECRET=your_secret_key
 CORS_ORIGIN=http://localhost:5174
+FRONTEND_URL=http://localhost:5173
 PORT=5000
 ```
 
@@ -61,6 +67,8 @@ Server will run on: **http://localhost:5000**
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
+- `POST /api/auth/forgot-password` - Send reset password link
+- `POST /api/auth/reset-password` - Reset password using token
 
 ### Items
 - `GET /api/items` - Get all items
@@ -75,7 +83,7 @@ Server will run on: **http://localhost:5000**
 ## 🗄️ Database Schema
 
 ### Users Table
-- id, name, email, password, phone, role, isActive, createdAt, updatedAt
+- id, name, email, password, resetPasswordToken, resetPasswordExpires, phone, role, isActive, createdAt, updatedAt
 
 ### Items Table
 - id, userId, title, description, category, itemType, status, location, contactPhone, contactEmail, imageUrl, createdAt, updatedAt

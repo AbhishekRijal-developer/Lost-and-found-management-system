@@ -43,7 +43,7 @@ export default function DebugPage() {
                 <p className="font-bold text-gray-800 mb-2">Status:</p>
                 {user.role === 'Admin' ? (
                   <div>
-                    <p className="text-lg text-green-600 font-bold">✅ You are an ADMIN!</p>
+                    <p className="text-lg text-green-600 font-bold"> You are an ADMIN!</p>
                     <button
                       onClick={() => navigate('/admin-panel')}
                       className="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
@@ -52,7 +52,7 @@ export default function DebugPage() {
                     </button>
                   </div>
                 ) : (
-                  <p className="text-lg text-red-600 font-bold">❌ You are a regular USER (not admin)</p>
+                  <p className="text-lg text-red-600 font-bold"> You are a regular USER (not admin)</p>
                 )}
               </div>
 

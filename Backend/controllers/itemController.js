@@ -90,7 +90,13 @@ export const itemController = {
       const connection = await pool.getConnection();
       
       try {
-        const [rows] = await connection.query('SELECT * FROM items WHERE id = ?', [id]);
+        const [rows] = await connection.query(
+          `SELECT i.*, u.id as reporterId, u.name as reporterName, u.email as reporterEmail, u.phone as reporterPhone
+           FROM items i
+           LEFT JOIN users u ON i.userId = u.id
+           WHERE i.id = ?`,
+          [id]
+        );
         
         if (rows.length === 0) {
           return res.status(404).json({
@@ -118,12 +124,13 @@ export const itemController = {
   // Create new item
   createItem: async (req, res) => {
     try {
-      const { userId, title, description, category, itemType, location, contactPhone, contactEmail } = req.body;
+      const { title, description, category, itemType, location, contactPhone, contactEmail } = req.body;
+      const userId = req.user?.id;
       
-      if (!title || !description || !itemType) {
+      if (!userId || !title || !description || !itemType) {
         return res.status(400).json({
           success: false,
-          message: 'Missing required fields'
+          message: 'Missing required fields or unauthenticated user'
         });
       }
       
@@ -166,6 +173,25 @@ export const itemController = {
       const connection = await pool.getConnection();
       
       try {
+        const [existing] = await connection.query('SELECT id, userId FROM items WHERE id = ?', [id]);
+
+        if (existing.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'Item not found'
+          });
+        }
+
+        const isOwner = Number(existing[0].userId) === Number(req.user.id);
+        const isAdmin = req.user.role === 'Admin';
+
+        if (!isOwner && !isAdmin) {
+          return res.status(403).json({
+            success: false,
+            message: 'You are not allowed to update this item'
+          });
+        }
+
         const query = 'UPDATE items SET title = ?, description = ?, category = ?, status = ?, location = ?, contactPhone = ?, updatedAt = NOW() WHERE id = ?';
         await connection.query(query, [title, description, category, status, location, contactPhone, id]);
         
@@ -193,6 +219,25 @@ export const itemController = {
       const connection = await pool.getConnection();
       
       try {
+        const [existing] = await connection.query('SELECT id, userId FROM items WHERE id = ?', [id]);
+
+        if (existing.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'Item not found'
+          });
+        }
+
+        const isOwner = Number(existing[0].userId) === Number(req.user.id);
+        const isAdmin = req.user.role === 'Admin';
+
+        if (!isOwner && !isAdmin) {
+          return res.status(403).json({
+            success: false,
+            message: 'You are not allowed to delete this item'
+          });
+        }
+
         await connection.query('DELETE FROM items WHERE id = ?', [id]);
         
         return res.json({
@@ -227,6 +272,25 @@ export const itemController = {
       const connection = await pool.getConnection();
       
       try {
+        const [existing] = await connection.query('SELECT id, userId FROM items WHERE id = ?', [id]);
+
+        if (existing.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'Item not found'
+          });
+        }
+
+        const isOwner = Number(existing[0].userId) === Number(req.user.id);
+        const isAdmin = req.user.role === 'Admin';
+
+        if (!isOwner && !isAdmin) {
+          return res.status(403).json({
+            success: false,
+            message: 'You are not allowed to update this item status'
+          });
+        }
+
         const [result] = await connection.query('UPDATE items SET status = ?, updatedAt = NOW() WHERE id = ?', [status, id]);
         
         if (result.affectedRows === 0) {
@@ -258,7 +322,9 @@ export const itemController = {
       const userId = req.user.id; // From auth middleware
       const { type, status, page = 1, limit = 10, search = '' } = req.query;
       
-      const offset = (page - 1) * limit;
+      const parsedPage = parseInt(page);
+      const parsedLimit = parseInt(limit);
+      const offset = (parsedPage - 1) * parsedLimit;
       let query = 'SELECT * FROM items WHERE userId = ?';
       let countQuery = 'SELECT COUNT(*) as total FROM items WHERE userId = ?';
       const params = [userId];
@@ -287,17 +353,17 @@ export const itemController = {
       const connection = await pool.getConnection();
       
       try {
-        const [countResult] = await connection.query(countQuery, params.slice(0, -2));
-        const [items] = await connection.query(query, [...params.slice(0, -2), parseInt(limit), offset]);
+        const [countResult] = await connection.query(countQuery, params);
+        const [items] = await connection.query(query, [...params, parsedLimit, offset]);
 
         return res.json({
           success: true,
           data: items,
           pagination: {
             total: countResult[0].total,
-            page: parseInt(page),
-            limit: parseInt(limit),
-            pages: Math.ceil(countResult[0].total / limit)
+            page: parsedPage,
+            limit: parsedLimit,
+            pages: Math.ceil(countResult[0].total / parsedLimit)
           }
         });
       } finally {

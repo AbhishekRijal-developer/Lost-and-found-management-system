@@ -1,6 +1,13 @@
 import pool from '../config/database.js';
 import { sendReportNotification } from '../services/emailService.js';
 
+const createNotification = async (connection, { userId, itemId, type, message }) => {
+  await connection.query(
+    'INSERT INTO notifications (userId, itemId, type, message, isRead, createdAt) VALUES (?, ?, ?, ?, 0, NOW())',
+    [userId, itemId || null, type, message]
+  );
+};
+
 export const itemController = {
   // Get all items with filters, search, and pagination
   getAllItems: async (req, res) => {
@@ -219,7 +226,10 @@ export const itemController = {
       const connection = await pool.getConnection();
       
       try {
-        const [existing] = await connection.query('SELECT id, userId FROM items WHERE id = ?', [id]);
+        const [existing] = await connection.query(
+          'SELECT id, userId, title, itemType FROM items WHERE id = ?',
+          [id]
+        );
 
         if (existing.length === 0) {
           return res.status(404).json({
@@ -238,12 +248,31 @@ export const itemController = {
           });
         }
 
+        await connection.beginTransaction();
+
+        if (isAdmin && !isOwner) {
+          const reportLabel = existing[0].itemType || 'item';
+          const reportTitle = existing[0].title || 'Untitled report';
+
+          await createNotification(connection, {
+            userId: existing[0].userId,
+            itemId: null,
+            type: 'report_deleted',
+            message: `An administrator removed your ${reportLabel} report: ${reportTitle}.`
+          });
+        }
+
         await connection.query('DELETE FROM items WHERE id = ?', [id]);
+
+        await connection.commit();
         
         return res.json({
           success: true,
           message: 'Item deleted successfully'
         });
+      } catch (error) {
+        await connection.rollback();
+        throw error;
       } finally {
         connection.release();
       }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { HiOutlineArrowLeft, HiOutlineSearch } from "react-icons/hi";
+import { HiOutlineArrowLeft, HiOutlinePlusCircle, HiOutlineSearch, HiOutlineViewGrid } from "react-icons/hi";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
 import { itemAPI } from "../services/api.js";
@@ -57,6 +57,30 @@ export default function FoundItems() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
 
+  const quickActions = [
+    {
+      label: "Report Found Item",
+      description: "Post a new found item report",
+      route: "/report-found",
+      icon: HiOutlinePlusCircle,
+      className: "bg-green-600 text-white hover:bg-green-700"
+    },
+    {
+      label: "Report Lost Item",
+      description: "Create a lost item post from here",
+      route: "/report-lost",
+      icon: HiOutlinePlusCircle,
+      className: "bg-blue-600 text-white hover:bg-blue-700"
+    },
+    {
+      label: "Browse Lost Items",
+      description: "Switch to the lost items list",
+      route: "/lost-items",
+      icon: HiOutlineViewGrid,
+      className: "bg-white text-gray-800 border border-gray-200 hover:bg-gray-50"
+    }
+  ];
+
   return (
     <>
       <Navbar />
@@ -82,6 +106,33 @@ export default function FoundItems() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
+          <div className="mb-8">
+            <p className="font-bold text-gray-700 mb-4">Quick Actions:</p>
+            <div className="grid gap-3 md:grid-cols-3">
+              {quickActions.map((action) => {
+                const Icon = action.icon;
+
+                return (
+                  <motion.button
+                    key={action.label}
+                    onClick={() => navigate(action.route)}
+                    className={`rounded-xl px-4 py-4 text-left transition ${action.className}`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="text-2xl" />
+                      <div>
+                        <p className="font-semibold">{action.label}</p>
+                        <p className="text-sm opacity-90">{action.description}</p>
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Search Bar */}
           <div className="relative mb-8">
             <HiOutlineSearch className="absolute left-4 top-4 text-gray-400 text-xl" />

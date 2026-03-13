@@ -1,6 +1,6 @@
 -- Create Database
-CREATE DATABASE IF NOT EXISTS lostandfound;
-USE lostandfound;
+CREATE DATABASE IF NOT EXISTS projectdb;
+USE projectdb;
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (
@@ -81,13 +81,13 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 CREATE TABLE IF NOT EXISTS notifications (
   id INT PRIMARY KEY AUTO_INCREMENT,
   userId INT NOT NULL,
-  itemId INT NOT NULL,
+  itemId INT DEFAULT NULL,
   type VARCHAR(50) NOT NULL,
   message TEXT NOT NULL,
   isRead BOOLEAN DEFAULT FALSE,
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (itemId) REFERENCES items(id) ON DELETE CASCADE,
+  FOREIGN KEY (itemId) REFERENCES items(id) ON DELETE SET NULL,
   INDEX idx_userId (userId),
   INDEX idx_isRead (isRead)
 );

@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { HiOutlineSearch, HiOutlineUser, HiOutlineLogout, HiOutlineMenu, HiOutlineX, HiOutlineShieldCheck, HiOutlineChatAlt2 } from "react-icons/hi";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
+import NotificationBell from "./NotificationBell.jsx";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ export default function Navbar() {
               >
                 <HiOutlineChatAlt2 className="text-xl" /> Chat
               </motion.button>
+              <NotificationBell />
               <motion.button
                 onClick={() => navigate("/profile")}
                 className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition"
@@ -158,6 +160,7 @@ export default function Navbar() {
             >
               Chat
             </motion.button>
+            <NotificationBell mobile />
             <motion.button
               onClick={() => {
                 navigate("/profile");

@@ -1,19 +1,21 @@
 import pool from '../config/database.js';
 
+const ALLOWED_NOTIFICATION_TYPES = ['item_match', 'item_found', 'item_claimed', 'message', 'report_deleted'];
+
 export const notificationController = {
   // Create notification
   createNotification: async (req, res) => {
     try {
       const { userId, itemId, type, message } = req.body;
 
-      if (!userId || !itemId || !type || !message) {
+      if (!userId || !type || !message) {
         return res.status(400).json({
           success: false,
-          message: 'userId, itemId, type, and message are required'
+          message: 'userId, type, and message are required'
         });
       }
 
-      if (!['item_match', 'item_found', 'item_claimed', 'message'].includes(type)) {
+      if (!ALLOWED_NOTIFICATION_TYPES.includes(type)) {
         return res.status(400).json({
           success: false,
           message: 'Invalid notification type'
@@ -25,7 +27,7 @@ export const notificationController = {
       try {
         const [result] = await connection.query(
           'INSERT INTO notifications (userId, itemId, type, message, isRead, createdAt) VALUES (?, ?, ?, ?, 0, NOW())',
-          [userId, itemId, type, message]
+          [userId, itemId || null, type, message]
         );
 
         return res.status(201).json({
@@ -34,7 +36,7 @@ export const notificationController = {
           data: {
             id: result.insertId,
             userId,
-            itemId,
+            itemId: itemId || null,
             type,
             message,
             isRead: 0,
@@ -95,9 +97,15 @@ export const notificationController = {
 
         const [countResult] = await connection.query(countQuery, countParams);
 
+        const [unreadCountResult] = await connection.query(
+          'SELECT COUNT(*) as total FROM notifications WHERE userId = ? AND isRead = 0',
+          [userId]
+        );
+
         return res.json({
           success: true,
           data: notifications,
+          unreadCount: unreadCountResult[0].total,
           pagination: {
             total: countResult[0].total,
             page: parseInt(page),

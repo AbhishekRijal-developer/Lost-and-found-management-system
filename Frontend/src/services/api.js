@@ -62,6 +62,9 @@ export const itemAPI = {
 
 export const contactAPI = {
   sendMessage: (payload) => apiCall('/contact', 'POST', payload),
+  getMessages: () => apiCall('/contact'),
+  replyToMessage: (id, adminReply) => apiCall(`/contact/${id}/reply`, 'PATCH', { adminReply }),
+  updateMessageStatus: (id, status) => apiCall(`/contact/${id}/status`, 'PATCH', { status }),
 };
 
 // Match/Claim APIs

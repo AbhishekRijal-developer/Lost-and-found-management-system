@@ -27,7 +27,7 @@ export const chatController = {
         }
 
         // Verify receiver exists
-        const [receiverCheck] = await connection.query('SELECT id FROM users WHERE id = ?', [receiverId]);
+        const [receiverCheck] = await connection.query('SELECT id, name FROM users WHERE id = ?', [receiverId]);
         if (receiverCheck.length === 0) {
           return res.status(404).json({
             success: false,
@@ -35,10 +35,20 @@ export const chatController = {
           });
         }
 
+        // Fetch sender name for notification text
+        const [senderRows] = await connection.query('SELECT name FROM users WHERE id = ?', [senderId]);
+        const senderName = senderRows[0]?.name || 'Someone';
+
         // Insert message
         const [result] = await connection.query(
           'INSERT INTO chat_messages (itemId, senderId, receiverId, message, isRead, createdAt) VALUES (?, ?, ?, ?, 0, NOW())',
           [itemId, senderId, receiverId, message.trim()]
+        );
+
+        // Notify the receiver
+        await connection.query(
+          'INSERT INTO notifications (userId, itemId, type, message, isRead, createdAt) VALUES (?, ?, ?, ?, 0, NOW())',
+          [receiverId, itemId || null, 'message', `New message from ${senderName}`]
         );
 
         return res.status(201).json({
@@ -72,10 +82,14 @@ export const chatController = {
       const { itemId, otherUserId, page = 1, limit = 20 } = req.query;
       const userId = req.user.id;
 
-      if (!itemId || !otherUserId) {
+      // itemId may be absent or the string 'null' for admin-support threads
+      const isSupport = !itemId || itemId === 'null';
+      const parsedItemId = isSupport ? null : itemId;
+
+      if (!otherUserId) {
         return res.status(400).json({
           success: false,
-          message: 'itemId and otherUserId are required'
+          message: 'otherUserId is required'
         });
       }
 
@@ -84,43 +98,31 @@ export const chatController = {
       const connection = await pool.getConnection();
 
       try {
-        // Get messages between these two users about this item
-        const query = `
-          SELECT cm.*, 
+        const userFilter = '((cm.senderId = ? AND cm.receiverId = ?) OR (cm.senderId = ? AND cm.receiverId = ?))';
+        const baseSelect = `
+          SELECT cm.*,
                  sender.name as senderName, sender.email as senderEmail,
                  receiver.name as receiverName, receiver.email as receiverEmail
           FROM chat_messages cm
           JOIN users sender ON cm.senderId = sender.id
           JOIN users receiver ON cm.receiverId = receiver.id
-          WHERE cm.itemId = ? 
-          AND ((cm.senderId = ? AND cm.receiverId = ?) OR (cm.senderId = ? AND cm.receiverId = ?))
-          ORDER BY cm.createdAt ASC
-          LIMIT ? OFFSET ?
         `;
 
-        const [messages] = await connection.query(query, [
-          itemId,
-          userId,
-          otherUserId,
-          otherUserId,
-          userId,
-          parseInt(limit),
-          offset
-        ]);
+        let query, countQuery, queryParams, countParams;
+        if (isSupport) {
+          query = baseSelect + ` WHERE cm.itemId IS NULL AND ${userFilter} ORDER BY cm.createdAt ASC LIMIT ? OFFSET ?`;
+          queryParams = [userId, otherUserId, otherUserId, userId, parseInt(limit), offset];
+          countQuery = `SELECT COUNT(*) as total FROM chat_messages WHERE itemId IS NULL AND ${userFilter.replace(/cm\./g, '')}`;
+          countParams = [userId, otherUserId, otherUserId, userId];
+        } else {
+          query = baseSelect + ` WHERE cm.itemId = ? AND ${userFilter} ORDER BY cm.createdAt ASC LIMIT ? OFFSET ?`;
+          queryParams = [parsedItemId, userId, otherUserId, otherUserId, userId, parseInt(limit), offset];
+          countQuery = `SELECT COUNT(*) as total FROM chat_messages WHERE itemId = ? AND ${userFilter.replace(/cm\./g, '')}`;
+          countParams = [parsedItemId, userId, otherUserId, otherUserId, userId];
+        }
 
-        // Get total count
-        const countQuery = `
-          SELECT COUNT(*) as total FROM chat_messages
-          WHERE itemId = ? 
-          AND ((senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?))
-        `;
-        const [countResult] = await connection.query(countQuery, [
-          itemId,
-          userId,
-          otherUserId,
-          otherUserId,
-          userId
-        ]);
+        const [messages] = await connection.query(query, queryParams);
+        const [countResult] = await connection.query(countQuery, countParams);
 
         return res.json({
           success: true,
@@ -163,8 +165,8 @@ export const chatController = {
             u.email,
             u.phone,
             c.itemId,
-            i.title as itemTitle,
-            i.itemType,
+            COALESCE(i.title, 'Admin Support') as itemTitle,
+            COALESCE(i.itemType, 'Support') as itemType,
             lm.message as lastMessage,
             lm.createdAt as lastMessageTime,
             COALESCE(uc.unreadCount, 0) as unreadCount
@@ -190,7 +192,7 @@ export const chatController = {
           ) c
           JOIN chat_messages lm ON lm.id = c.lastMessageId
           JOIN users u ON u.id = c.otherUserId
-          JOIN items i ON i.id = c.itemId
+          LEFT JOIN items i ON i.id = c.itemId
           LEFT JOIN (
             SELECT
               itemId,
@@ -199,7 +201,7 @@ export const chatController = {
             FROM chat_messages
             WHERE receiverId = ? AND isRead = 0
             GROUP BY itemId, senderId
-          ) uc ON uc.itemId = c.itemId AND uc.senderId = c.otherUserId
+          ) uc ON uc.itemId <=> c.itemId AND uc.senderId = c.otherUserId
           ORDER BY lm.id DESC
         `;
 
@@ -256,23 +258,30 @@ export const chatController = {
     try {
       const { itemId, otherUserId } = req.body;
       const userId = req.user.id;
+      const isSupport = itemId === null || itemId === undefined;
 
-      if (!itemId || !otherUserId) {
+      if (!otherUserId) {
         return res.status(400).json({
           success: false,
-          message: 'itemId and otherUserId are required'
+          message: 'otherUserId is required'
         });
       }
 
       const connection = await pool.getConnection();
 
       try {
-        const [result] = await connection.query(
-          `UPDATE chat_messages 
-           SET isRead = 1 
-           WHERE itemId = ? AND senderId = ? AND receiverId = ?`,
-          [itemId, otherUserId, userId]
-        );
+        let result;
+        if (isSupport) {
+          [result] = await connection.query(
+            'UPDATE chat_messages SET isRead = 1 WHERE itemId IS NULL AND senderId = ? AND receiverId = ?',
+            [otherUserId, userId]
+          );
+        } else {
+          [result] = await connection.query(
+            'UPDATE chat_messages SET isRead = 1 WHERE itemId = ? AND senderId = ? AND receiverId = ?',
+            [itemId, otherUserId, userId]
+          );
+        }
 
         return res.json({
           success: true,

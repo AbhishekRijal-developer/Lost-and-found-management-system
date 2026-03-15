@@ -73,6 +73,30 @@ export default function Home() {
     { label: "Success Rate", value: "92%" }
   ];
 
+  const testimonials = [
+    {
+      name: "Aarav Sharma",
+      role: "Student",
+      quote:
+        "I found my lost wallet within a day. The platform made connecting with the finder super easy and safe.",
+      rating: 5
+    },
+    {
+      name: "Meera Nair",
+      role: "Working Professional",
+      quote:
+        "Posting a found phone took less than two minutes. The owner reached out quickly and recovered it.",
+      rating: 5
+    },
+    {
+      name: "Rohan Verma",
+      role: "Community Volunteer",
+      quote:
+        "This system builds trust in the community. I have helped return multiple items through one dashboard.",
+      rating: 4
+    }
+  ];
+
   return (
     <>
       <Navbar />
@@ -148,31 +172,40 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {/* Recent Activity Section */}
-      <motion.div 
+      {/* Testimonial Section */}
+      <motion.div
         className="max-w-7xl mx-auto px-6 mb-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <h3 className="text-3xl font-bold mb-8 text-black">Recently Posted</h3>
-        <div className="grid md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((idx) => (
-            <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center text-6xl">
-                □
+        <h3 className="text-3xl font-bold text-center mb-4 text-black">What our users say</h3>
+        <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12">
+          Real stories from people who successfully reported and recovered their belongings.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial, idx) => (
+            <motion.div
+              key={idx}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-green-100"
+              variants={itemVariants}
+              whileHover={{ y: -8 }}
+            >
+              <p className="text-green-600 text-xl mb-4">
+                {"★".repeat(testimonial.rating)}
+                <span className="text-gray-300">{"★".repeat(5 - testimonial.rating)}</span>
+              </p>
+              <p className="text-gray-700 mb-6 leading-relaxed">"{testimonial.quote}"</p>
+              <div>
+                <p className="font-bold text-black">{testimonial.name}</p>
+                <p className="text-sm text-gray-500">{testimonial.role}</p>
               </div>
-              <div className="p-6">
-                <h4 className="font-bold text-lg mb-2">Lost: Blue Wallet</h4>
-                <p className="text-gray-600 text-sm mb-4">Posted 2 hours ago near City Center</p>
-                <button className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
-                  View Details
-                </button>
-              </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.div>
+      
 
       <Footer />
     </div>

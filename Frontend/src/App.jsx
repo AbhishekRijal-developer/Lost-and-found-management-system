@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { useAuth } from './context/AuthContext.jsx'
+import { ThemeProvider } from './context/ThemeContext.jsx'
 import AdminRoute from './component/AdminRoute.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
@@ -18,6 +19,7 @@ import Profile from './pages/Profile.jsx'
 import ContactUs from './pages/ContactUs.jsx'
 import Chat from './pages/Chat.jsx'
 import AdminPanel from './pages/AdminPanel.jsx'
+import AdminMessages from './pages/AdminMessages.jsx'
 import Debug from './pages/Debug.jsx'
 
 function ProtectedRoute({ children }) {
@@ -50,6 +52,7 @@ function PublicOnlyRoute({ children }) {
 
 function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <Router>
         <Routes>
@@ -88,11 +91,19 @@ function App() {
             </AdminRoute>
           </ProtectedRoute>
         } />
+        <Route path="/admin-messages" element={
+          <ProtectedRoute>
+            <AdminRoute>
+              <AdminMessages />
+            </AdminRoute>
+          </ProtectedRoute>
+        } />
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
     </AuthProvider>
+    </ThemeProvider>
   )
 }
 

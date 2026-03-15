@@ -92,6 +92,26 @@ CREATE TABLE IF NOT EXISTS notifications (
   INDEX idx_isRead (isRead)
 );
 
+-- Contact Messages Table
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  userId INT NULL,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(150) NOT NULL,
+  subject VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  status ENUM('Open', 'Addressed') DEFAULT 'Open',
+  adminReply TEXT NULL,
+  repliedBy INT NULL,
+  repliedAt DATETIME NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (repliedBy) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_contact_status (status),
+  INDEX idx_contact_createdAt (createdAt)
+);
+
 -- Sample Users (for testing)
 INSERT INTO users (name, email, password, phone, role) VALUES 
 ('Admin User', 'admin@iic.edu.np', '$2a$10$YjJjZGM4MjNhMmU4Nzc4YuZhBW5WzGvKjZcR8Q8vI2O1H7T2i', '9800000001', 'Admin'),

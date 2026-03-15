@@ -149,11 +149,15 @@ export default function Chat() {
                   </button>
                   <div className="flex-1">
                     <h2 className="font-bold text-lg text-white">{selectedConversation.name}</h2>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-green-400">Item:</span>
-                      <span className="text-sm text-gray-300">{selectedConversation.itemTitle}</span>
-                      <span className="text-xs text-gray-500">({selectedConversation.itemType})</span>
-                    </div>
+                    {selectedConversation.itemId == null ? (
+                      <span className="inline-block mt-1 text-xs bg-green-700 text-white px-2 py-0.5 rounded-full">Admin Support Thread</span>
+                    ) : (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-green-400">Item:</span>
+                        <span className="text-sm text-gray-300">{selectedConversation.itemTitle}</span>
+                        <span className="text-xs text-gray-500">({selectedConversation.itemType})</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -194,24 +198,31 @@ export default function Chat() {
                   )}
                 </div>
 
-                {/* Input */}
-                <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-800 flex gap-2">
-                  <input
-                    type="text"
-                    value={messageText}
-                    onChange={(e) => setMessageText(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-green-600"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!messageText.trim()}
-                    className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold px-4 py-2 rounded transition flex items-center gap-2"
-                  >
-                    <HiOutlinePaperAirplane size={18} />
-                    <span className="hidden sm:inline">Send</span>
-                  </button>
-                </form>
+                {/* Input — disabled for admin support threads */}
+                {selectedConversation.itemId == null ? (
+                  <div className="p-4 border-t border-gray-800 text-center text-sm text-gray-500">
+                    This is a read-only support thread. To send another message use the{' '}
+                    <a href="/contact" className="text-green-400 hover:underline">Contact Us</a> page.
+                  </div>
+                ) : (
+                  <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-800 flex gap-2">
+                    <input
+                      type="text"
+                      value={messageText}
+                      onChange={(e) => setMessageText(e.target.value)}
+                      placeholder="Type your message..."
+                      className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-green-600"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!messageText.trim()}
+                      className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold px-4 py-2 rounded transition flex items-center gap-2"
+                    >
+                      <HiOutlinePaperAirplane size={18} />
+                      <span className="hidden sm:inline">Send</span>
+                    </button>
+                  </form>
+                )}
               </div>
             ) : (
               <div className="bg-gray-900 rounded-lg border border-gray-800 h-96 flex items-center justify-center">

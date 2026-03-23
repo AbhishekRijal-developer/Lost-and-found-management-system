@@ -63,9 +63,6 @@ export default function Navbar() {
             className="cursor-pointer flex items-center gap-3"
             whileHover={{ scale: 1.05 }}
           >
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-green-600 to-emerald-500 text-white font-bold shadow-md">
-              LF
-            </span>
             <h1 className="text-2xl font-bold text-green-600 leading-none">
               Lost & Found
             </h1>

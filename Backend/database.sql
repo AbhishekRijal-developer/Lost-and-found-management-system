@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
+  isEmailVerified BOOLEAN NOT NULL DEFAULT FALSE,
+  emailVerificationOtp VARCHAR(64) DEFAULT NULL,
+  emailVerificationExpires DATETIME DEFAULT NULL,
   resetPasswordToken VARCHAR(64) DEFAULT NULL,
   resetPasswordExpires DATETIME DEFAULT NULL,
   phone VARCHAR(20),
@@ -22,6 +25,8 @@ CREATE TABLE IF NOT EXISTS users (
   updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_email (email),
   INDEX idx_role (role),
+  INDEX idx_isEmailVerified (isEmailVerified),
+  INDEX idx_emailVerificationOtp (emailVerificationOtp),
   INDEX idx_resetPasswordToken (resetPasswordToken)
 );
 
@@ -118,8 +123,8 @@ CREATE TABLE IF NOT EXISTS contact_messages (
 );
 
 -- Sample Users (for testing)
-INSERT INTO users (name, email, password, phone, role) VALUES 
-('Admin User', 'admin@iic.edu.np', '$2a$10$YjJjZGM4MjNhMmU4Nzc4YuZhBW5WzGvKjZcR8Q8vI2O1H7T2i', '9800000001', 'Admin'),
-('Test User', 'test@iic.edu.np', '$2a$10$YjJjZGM4MjNhMmU4Nzc4YuZhBW5WzGvKjZcR8Q8vI2O1H7T2i', '9800000002', 'User');
+INSERT INTO users (name, email, password, phone, role, isEmailVerified) VALUES 
+('Admin User', 'admin@iic.edu.np', '$2a$10$YjJjZGM4MjNhMmU4Nzc4YuZhBW5WzGvKjZcR8Q8vI2O1H7T2i', '9800000001', 'Admin', TRUE),
+('Test User', 'test@iic.edu.np', '$2a$10$YjJjZGM4MjNhMmU4Nzc4YuZhBW5WzGvKjZcR8Q8vI2O1H7T2i', '9800000002', 'User', TRUE);
 
 

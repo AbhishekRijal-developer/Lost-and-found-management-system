@@ -10,6 +10,11 @@ import { authAPI } from "../services/api.js";
 export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendingOtp, setResendingOtp] = useState(false);
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
 
   const [formData, setFormData] = useState({
     name: "",
@@ -18,7 +23,6 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "User",
   });
 
   const [error, setError] = useState("");
@@ -60,17 +64,62 @@ export default function Register() {
         email: formData.email,
         password: formData.password,
         phone: formData.phone || null,
-        role: formData.role,
       });
 
       if (response.success) {
-        setSuccess("Account created successfully! Redirecting to login...");
-        setTimeout(() => navigate('/login'), 1500);
+        setPendingEmail(response.email || formData.email.trim().toLowerCase());
+        setShowOtpDialog(true);
+        setSuccess("Registration started. Please enter the OTP sent to your college email.");
       }
     } catch (err) {
       setError(err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    if (!/^\d{6}$/.test(otp.trim())) {
+      setError('Please enter a valid 6-digit OTP.');
+      return;
+    }
+
+    try {
+      setVerifyingOtp(true);
+      const response = await authAPI.verifyRegistrationOtp(pendingEmail, otp.trim());
+
+      if (response.success) {
+        setSuccess('Email verified successfully! Redirecting to login...');
+        setShowOtpDialog(false);
+        setOtp('');
+        setTimeout(() => navigate('/login'), 1500);
+      }
+    } catch (err) {
+      setError(err.message || 'OTP verification failed. Please try again.');
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError('');
+    setSuccess('');
+
+    try {
+      setResendingOtp(true);
+      const response = await authAPI.resendRegistrationOtp(pendingEmail);
+
+      if (response.success) {
+        setSuccess('A new OTP has been sent to your email.');
+      }
+    } catch (err) {
+      setError(err.message || 'Unable to resend OTP right now.');
+    } finally {
+      setResendingOtp(false);
     }
   };
 
@@ -194,19 +243,6 @@ export default function Register() {
               </div>
             </motion.div>
 
-            <motion.div className="mb-5" variants={itemVariants}>
-              <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Role</label>
-              <select
-                name="role"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white"
-                value={formData.role}
-                onChange={handleChange}
-              >
-                <option value="User">User</option>
-                <option value="Admin">Admin</option>
-              </select>
-            </motion.div>
-
             <motion.div className="grid md:grid-cols-2 gap-4 mb-5" variants={itemVariants}>
               <div>
                 <label className="block font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Password</label>
@@ -300,6 +336,61 @@ export default function Register() {
           </motion.div>
         </motion.div>
       </div>
+
+      {showOtpDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <motion.div
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Verify your email</h3>
+            <p className="text-sm text-gray-600 mb-5">
+              Enter the 6-digit OTP sent to <span className="font-semibold">{pendingEmail}</span>
+            </p>
+
+            <form onSubmit={handleVerifyOtp}>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-white text-center tracking-[0.45em] text-xl font-semibold"
+                placeholder="000000"
+                required
+              />
+
+              <button
+                type="submit"
+                disabled={verifyingOtp}
+                className="mt-4 w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {verifyingOtp ? 'Verifying OTP...' : 'Verify OTP'}
+              </button>
+            </form>
+
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={resendingOtp}
+                className="text-sm font-semibold text-blue-600 hover:text-blue-700 disabled:opacity-50"
+              >
+                {resendingOtp ? 'Resending...' : 'Resend OTP'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowOtpDialog(false)}
+                className="text-sm font-semibold text-gray-500 hover:text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <Footer />
     </div>

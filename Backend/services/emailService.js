@@ -187,6 +187,46 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetUrl) => {
   }
 };
 
+export const sendRegistrationOtpEmail = async (userEmail, userName, otpCode) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Verify Your Email - Lost & Found System',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #2563eb; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h1>Lost & Found System</h1>
+            <p>Email Verification OTP</p>
+          </div>
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px;">
+            <p>Hi <strong>${userName}</strong>,</p>
+            <p>Use the OTP below to complete your registration.</p>
+            <div style="margin: 24px 0; text-align: center;">
+              <span style="display: inline-block; background: #e0e7ff; color: #1e3a8a; font-size: 28px; font-weight: 700; letter-spacing: 8px; padding: 14px 20px; border-radius: 10px;">
+                ${otpCode}
+              </span>
+            </div>
+            <p>This OTP expires in <strong>10 minutes</strong>.</p>
+            <p>If you did not request this registration, you can ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+            <p style="text-align: center; color: #999; font-size: 12px;">
+              © 2026 Lost & Found Management System. All rights reserved.
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Registration OTP sent to ${userEmail}`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error sending registration OTP email:', error.message);
+    return false;
+  }
+};
+
 export const sendContactMessage = async (name, email, subject, message) => {
   try {
     const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;

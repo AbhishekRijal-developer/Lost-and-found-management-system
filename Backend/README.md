@@ -34,6 +34,11 @@ If your database already exists, run this one-time migration for forgot-password
 mysql -u root -p lostandfound < migrations/add-forgot-password-columns.sql
 ```
 
+For registration OTP email verification in existing databases:
+```bash
+mysql -u root -p lostandfound < migrations/add-email-verification-columns.sql
+```
+
 ### 3. Configure Environment Variables
 
 Edit `.env` file with your database credentials:
@@ -66,6 +71,8 @@ Server will run on: **http://localhost:5000**
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
+- `POST /api/auth/verify-registration-otp` - Verify registration OTP
+- `POST /api/auth/resend-registration-otp` - Resend registration OTP
 - `POST /api/auth/login` - Login user
 - `POST /api/auth/forgot-password` - Send reset password link
 - `POST /api/auth/reset-password` - Reset password using token

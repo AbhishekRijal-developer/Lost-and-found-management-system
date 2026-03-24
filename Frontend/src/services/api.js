@@ -37,6 +37,8 @@ export const apiCall = async (endpoint, method = 'GET', data = null) => {
 // Authentication APIs
 export const authAPI = {
   register: (userData) => apiCall('/auth/register', 'POST', userData),
+  verifyRegistrationOtp: (email, otp) => apiCall('/auth/verify-registration-otp', 'POST', { email, otp }),
+  resendRegistrationOtp: (email) => apiCall('/auth/resend-registration-otp', 'POST', { email }),
   login: (email, password) => apiCall('/auth/login', 'POST', { email, password }),
   getCurrentUser: () => apiCall('/auth/me'),
   getProfileStats: () => apiCall('/auth/me/stats'),

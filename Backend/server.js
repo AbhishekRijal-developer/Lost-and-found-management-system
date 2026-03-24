@@ -6,6 +6,7 @@ import itemRoutes from './routes/itemRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import { ensureAuthSchema } from './services/authSchemaService.js';
 import { ensureNotificationSchema } from './services/notificationSchemaService.js';
 import { ensureContactSchema } from './services/contactSchemaService.js';
 import { ensureUserProfileSchema } from './services/userProfileSchemaService.js';
@@ -65,6 +66,7 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
   try {
+    await ensureAuthSchema();
     await ensureNotificationSchema();
     await ensureContactSchema();
     await ensureUserProfileSchema();

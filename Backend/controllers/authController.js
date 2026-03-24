@@ -122,7 +122,12 @@ export const authController = {
             name: user.name,
             email: user.email,
             role: user.role,
-            phone: user.phone
+            phone: user.phone,
+            bio: user.bio,
+            department: user.department,
+            batch: user.batch,
+            location: user.location,
+            profilePicture: user.profilePicture
           }
         });
       } finally {
@@ -145,7 +150,10 @@ export const authController = {
       const connection = await pool.getConnection();
       
       try {
-        const [rows] = await connection.query('SELECT id, name, email, phone, role FROM users WHERE id = ?', [userId]);
+        const [rows] = await connection.query(
+          'SELECT id, name, email, phone, role, bio, department, batch, location, profilePicture FROM users WHERE id = ?',
+          [userId]
+        );
         
         if (rows.length === 0) {
           return res.status(404).json({
@@ -319,7 +327,7 @@ export const authController = {
   updateProfile: async (req, res) => {
     try {
       const userId = req.user.id;
-      const { name, phone } = req.body;
+      const { name, phone, bio, department, batch, location, profilePicture } = req.body;
 
       if (!name || !name.trim()) {
         return res.status(400).json({
@@ -332,11 +340,32 @@ export const authController = {
 
       try {
         await connection.query(
-          'UPDATE users SET name = ?, phone = ?, updatedAt = NOW() WHERE id = ?',
-          [name.trim(), phone || null, userId]
+          `UPDATE users
+           SET name = ?,
+               phone = ?,
+               bio = ?,
+               department = ?,
+               batch = ?,
+               location = ?,
+               profilePicture = ?,
+               updatedAt = NOW()
+           WHERE id = ?`,
+          [
+            name.trim(),
+            phone || null,
+            bio || null,
+            department || null,
+            batch || null,
+            location || null,
+            profilePicture || null,
+            userId
+          ]
         );
 
-        const [rows] = await connection.query('SELECT id, name, email, phone, role FROM users WHERE id = ?', [userId]);
+        const [rows] = await connection.query(
+          'SELECT id, name, email, phone, role, bio, department, batch, location, profilePicture FROM users WHERE id = ?',
+          [userId]
+        );
 
         return res.json({
           success: true,
@@ -351,6 +380,51 @@ export const authController = {
       return res.status(500).json({
         success: false,
         message: 'Error updating profile',
+        error: error.message
+      });
+    }
+  },
+
+  // Get current user profile statistics
+  getProfileStats: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const connection = await pool.getConnection();
+
+      try {
+        const [rows] = await connection.query(
+          `SELECT
+             COUNT(*) AS totalReports,
+             SUM(CASE WHEN itemType = 'Found' THEN 1 ELSE 0 END) AS itemsFound,
+             SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) AS resolvedReports
+           FROM items
+           WHERE userId = ?`,
+          [userId]
+        );
+
+        const totalReports = Number(rows[0]?.totalReports || 0);
+        const itemsFound = Number(rows[0]?.itemsFound || 0);
+        const resolvedReports = Number(rows[0]?.resolvedReports || 0);
+        const helpfulRating = totalReports > 0
+          ? Math.round((resolvedReports / totalReports) * 100)
+          : 0;
+
+        return res.json({
+          success: true,
+          data: {
+            totalReports,
+            itemsFound,
+            helpfulRating
+          }
+        });
+      } finally {
+        connection.release();
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: 'Error fetching profile stats',
         error: error.message
       });
     }

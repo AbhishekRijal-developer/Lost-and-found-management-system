@@ -121,7 +121,15 @@ export default function MyReports() {
                 <div className={`w-24 h-24 rounded-lg flex items-center justify-center text-5xl flex-shrink-0 ${
                   report.itemType === "Lost" ? "bg-red-100" : "bg-green-100"
                 }`}>
-                  {report.itemType === "Lost" ? "🔴" : "🟢"}
+                  {report.imageUrl ? (
+                    <img
+                      src={report.imageUrl}
+                      alt={report.title}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    report.itemType === "Lost" ? "🔴" : "🟢"
+                  )}
                 </div>
 
                 {/* Details */}

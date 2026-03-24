@@ -17,33 +17,104 @@ export default function Profile() {
     name: "",
     email: "",
     phone: "",
+    bio: "",
+    department: "",
+    batch: "",
+    location: "",
+    profilePicture: "",
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalReports: 0,
+    itemsFound: 0,
+    helpfulRating: 0,
   });
 
   const [tempData, setTempData] = useState(userData);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileData = async () => {
       try {
         setLoading(true);
-        const response = await authAPI.getCurrentUser();
-        if (response.success) {
+        setStatsLoading(true);
+        const [profileResponse, statsResponse] = await Promise.all([
+          authAPI.getCurrentUser(),
+          authAPI.getProfileStats(),
+        ]);
+
+        if (profileResponse.success) {
           const profile = {
-            name: response.data.name || "",
-            email: response.data.email || "",
-            phone: response.data.phone || "",
+            name: profileResponse.data.name || "",
+            email: profileResponse.data.email || "",
+            phone: profileResponse.data.phone || "",
+            bio: profileResponse.data.bio || "",
+            department: profileResponse.data.department || "",
+            batch: profileResponse.data.batch || "",
+            location: profileResponse.data.location || "",
+            profilePicture: profileResponse.data.profilePicture || "",
           };
           setUserData(profile);
           setTempData(profile);
+        }
+
+        if (statsResponse.success) {
+          setStats({
+            totalReports: statsResponse.data.totalReports || 0,
+            itemsFound: statsResponse.data.itemsFound || 0,
+            helpfulRating: statsResponse.data.helpfulRating || 0,
+          });
         }
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
+        setStatsLoading(false);
       }
     };
 
-    fetchProfile();
+    fetchProfileData();
   }, []);
+
+  const getInitials = (name) => {
+    if (!name || !name.trim()) {
+      return "U";
+    }
+
+    return name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((segment) => segment[0].toUpperCase())
+      .join("");
+  };
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file.");
+      return;
+    }
+
+    const maxSizeBytes = 2 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      alert("Profile picture must be under 2MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setTempData((previous) => ({
+        ...previous,
+        profilePicture: typeof reader.result === "string" ? reader.result : "",
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSave = async () => {
     try {
@@ -51,6 +122,11 @@ export default function Profile() {
       const response = await authAPI.updateProfile({
         name: tempData.name,
         phone: tempData.phone,
+        bio: tempData.bio,
+        department: tempData.department,
+        batch: tempData.batch,
+        location: tempData.location,
+        profilePicture: tempData.profilePicture,
       });
 
       if (response.success) {
@@ -61,11 +137,21 @@ export default function Profile() {
           name: updatedUser.name || "",
           email: updatedUser.email || "",
           phone: updatedUser.phone || "",
+          bio: updatedUser.bio || "",
+          department: updatedUser.department || "",
+          batch: updatedUser.batch || "",
+          location: updatedUser.location || "",
+          profilePicture: updatedUser.profilePicture || "",
         });
         setTempData({
           name: updatedUser.name || "",
           email: updatedUser.email || "",
           phone: updatedUser.phone || "",
+          bio: updatedUser.bio || "",
+          department: updatedUser.department || "",
+          batch: updatedUser.batch || "",
+          location: updatedUser.location || "",
+          profilePicture: updatedUser.profilePicture || "",
         });
 
         const existingToken = localStorage.getItem("token");
@@ -83,10 +169,10 @@ export default function Profile() {
     }
   };
 
-  const stats = [
-    { label: "Total Reports", value: "--" },
-    { label: "Items Found", value: "--" },
-    { label: "Helpful Ratings", value: "--" },
+  const statsCards = [
+    { label: "Total Reports", value: stats.totalReports },
+    { label: "Items Found", value: stats.itemsFound },
+    { label: "Helpful Rating", value: `${stats.helpfulRating}%` },
   ];
 
   const containerVariants = {
@@ -151,8 +237,16 @@ export default function Profile() {
               {/* Profile Info */}
               <div className="px-8 pb-8">
                 <div className="flex items-end gap-4 -mt-16 mb-6">
-                  <div className="w-32 h-32 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center text-6xl border-4 border-white shadow-lg">
-                    👤
+                  <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-green-400 to-green-500 flex items-center justify-center text-4xl text-white font-bold">
+                    {tempData.profilePicture || userData.profilePicture ? (
+                      <img
+                        src={tempData.profilePicture || userData.profilePicture}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span>{getInitials(tempData.name || userData.name)}</span>
+                    )}
                   </div>
                   <motion.button
                     onClick={() => setIsEditing(!isEditing)}
@@ -162,6 +256,19 @@ export default function Profile() {
                     {isEditing ? "Cancel" : "Edit Profile"}
                   </motion.button>
                 </div>
+
+                {isEditing && (
+                  <div className="mb-6">
+                    <label className="block text-gray-700 font-bold mb-2">Profile Picture</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-green-100 file:text-green-700 file:font-semibold hover:file:bg-green-200"
+                    />
+                    <p className="text-xs text-gray-500 mt-2">Upload JPG, PNG or GIF up to 2MB.</p>
+                  </div>
+                )}
 
                 {/* Editable Fields */}
                 <div className="space-y-6">
@@ -198,6 +305,66 @@ export default function Profile() {
                     )}
                   </div>
 
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-2">Department</label>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={tempData.department}
+                        onChange={(e) => setTempData({ ...tempData, department: e.target.value })}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                        placeholder="e.g. Computer Science"
+                      />
+                    ) : (
+                      <p className="text-gray-800">{userData.department || "Not set"}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-2">Batch</label>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={tempData.batch}
+                        onChange={(e) => setTempData({ ...tempData, batch: e.target.value })}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                        placeholder="e.g. 2024"
+                      />
+                    ) : (
+                      <p className="text-gray-800">{userData.batch || "Not set"}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-2">Location</label>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={tempData.location}
+                        onChange={(e) => setTempData({ ...tempData, location: e.target.value })}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                        placeholder="e.g. Kathmandu"
+                      />
+                    ) : (
+                      <p className="text-gray-800">{userData.location || "Not set"}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-2">Bio</label>
+                    {isEditing ? (
+                      <textarea
+                        value={tempData.bio}
+                        onChange={(e) => setTempData({ ...tempData, bio: e.target.value })}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                        rows={4}
+                        placeholder="Tell others something about you"
+                      />
+                    ) : (
+                      <p className="text-gray-800 whitespace-pre-line">{userData.bio || "No bio added yet."}</p>
+                    )}
+                  </div>
+
                   {isEditing && (
                     <motion.button
                       onClick={handleSave}
@@ -217,7 +384,7 @@ export default function Profile() {
           {/* Stats Sidebar */}
           <motion.div className="md:col-span-1" variants={itemVariants}>
             <div className="space-y-6">
-              {stats.map((stat, idx) => (
+              {statsCards.map((stat, idx) => (
                 <motion.div
                   key={idx}
                   className="bg-white rounded-2xl shadow-lg p-6 text-center"
@@ -225,7 +392,7 @@ export default function Profile() {
                   whileHover={{ y: -5 }}
                 >
                   <p className="text-4xl font-bold text-green-600 mb-2">
-                    {stat.value}
+                    {statsLoading ? "..." : stat.value}
                   </p>
                   <p className="text-gray-600 font-semibold">{stat.label}</p>
                 </motion.div>

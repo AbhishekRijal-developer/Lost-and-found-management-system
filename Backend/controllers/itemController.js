@@ -131,7 +131,7 @@ export const itemController = {
   // Create new item
   createItem: async (req, res) => {
     try {
-      const { title, description, category, itemType, location, contactPhone, contactEmail } = req.body;
+      const { title, description, category, itemType, location, contactPhone, contactEmail, imageUrl } = req.body;
       const userId = req.user?.id;
       
       if (!userId || !title || !description || !itemType) {
@@ -144,8 +144,25 @@ export const itemController = {
       const connection = await pool.getConnection();
       
       try {
-        const query = 'INSERT INTO items (userId, title, description, category, itemType, location, contactPhone, contactEmail) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        const [result] = await connection.query(query, [userId, title, description, category || null, itemType, location || null, contactPhone || null, contactEmail || null]);
+        if (imageUrl && !/^data:image\/(png|jpe?g|gif|webp);base64,/i.test(imageUrl)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid image format. Only PNG, JPG, JPEG, GIF and WEBP are allowed.'
+          });
+        }
+
+        const query = 'INSERT INTO items (userId, title, description, category, itemType, location, contactPhone, contactEmail, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const [result] = await connection.query(query, [
+          userId,
+          title,
+          description,
+          category || null,
+          itemType,
+          location || null,
+          contactPhone || null,
+          contactEmail || null,
+          imageUrl || null
+        ]);
         
         // Send email notification (don't wait for it)
         setTimeout(() => {

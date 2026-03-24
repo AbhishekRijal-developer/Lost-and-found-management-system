@@ -8,6 +8,8 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import { ensureNotificationSchema } from './services/notificationSchemaService.js';
 import { ensureContactSchema } from './services/contactSchemaService.js';
+import { ensureUserProfileSchema } from './services/userProfileSchemaService.js';
+import { ensureItemSchema } from './services/itemSchemaService.js';
 
 dotenv.config();
 
@@ -35,7 +37,7 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
@@ -65,6 +67,8 @@ const startServer = async () => {
   try {
     await ensureNotificationSchema();
     await ensureContactSchema();
+    await ensureUserProfileSchema();
+    await ensureItemSchema();
 
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);

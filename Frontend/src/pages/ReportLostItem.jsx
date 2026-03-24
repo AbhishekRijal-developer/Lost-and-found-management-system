@@ -21,6 +21,7 @@ export default function ReportLostItem() {
     location: "",
     contactPhone: "",
     contactEmail: user?.email || "",
+    imageUrl: "",
   });
 
   const categories = [
@@ -30,6 +31,34 @@ export default function ReportLostItem() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose a valid image file.");
+      return;
+    }
+
+    const maxSizeBytes = 2 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      setError("Image size must be 2MB or less.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFormData((previous) => ({
+        ...previous,
+        imageUrl: typeof reader.result === "string" ? reader.result : "",
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -59,6 +88,7 @@ export default function ReportLostItem() {
         location: formData.location,
         contactPhone: formData.contactPhone,
         contactEmail: formData.contactEmail,
+        imageUrl: formData.imageUrl,
       });
 
       if (response.success) {
@@ -208,7 +238,30 @@ export default function ReportLostItem() {
                   onChange={handleChange}
                 />
               </motion.div>
+
+              {/* Image Upload */}
+              <motion.div variants={itemVariants}>
+                <label className="block font-bold text-gray-700 mb-2">Item Photo</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition"
+                  onChange={handleImageUpload}
+                />
+                <p className="text-xs text-gray-500 mt-2">Optional. JPG, PNG, GIF or WEBP up to 2MB.</p>
+              </motion.div>
             </motion.div>
+
+            {formData.imageUrl && (
+              <motion.div variants={itemVariants} className="mb-8">
+                <p className="block font-bold text-gray-700 mb-2">Image Preview</p>
+                <img
+                  src={formData.imageUrl}
+                  alt="Lost item preview"
+                  className="w-full max-w-sm h-56 object-cover rounded-lg border border-gray-200"
+                />
+              </motion.div>
+            )}
 
             {/* Description */}
             <motion.div variants={itemVariants} className="mb-8">

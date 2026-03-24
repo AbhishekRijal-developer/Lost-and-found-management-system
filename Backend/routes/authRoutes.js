@@ -17,5 +17,6 @@ router.post('/reset-password', authController.resetPassword);
 // Get current user (protected route)
 router.get('/me', authenticateToken, authController.getCurrentUser);
 router.put('/me', authenticateToken, authController.updateProfile);
+router.get('/me/stats', authenticateToken, authController.getProfileStats);
 
 export default router;

@@ -39,6 +39,7 @@ export const authAPI = {
   register: (userData) => apiCall('/auth/register', 'POST', userData),
   login: (email, password) => apiCall('/auth/login', 'POST', { email, password }),
   getCurrentUser: () => apiCall('/auth/me'),
+  getProfileStats: () => apiCall('/auth/me/stats'),
   updateProfile: (profileData) => apiCall('/auth/me', 'PUT', profileData),
   forgotPassword: (email) => apiCall('/auth/forgot-password', 'POST', { email }),
   resetPassword: (token, password) => apiCall('/auth/reset-password', 'POST', { token, password }),

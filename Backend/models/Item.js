@@ -41,9 +41,9 @@ class Item {
   }
 
   static async update(id, itemData) {
-    const { title, description, category, location, status } = itemData;
-    const query = 'UPDATE items SET title = ?, description = ?, category = ?, location = ?, status = ? WHERE id = ?';
-    return pool.query(query, [title, description, category, location, status, id]);
+    const { title, description, category, location, status, priority } = itemData;
+    const query = 'UPDATE items SET title = ?, description = ?, category = ?, location = ?, status = ?, priority = ? WHERE id = ?';
+    return pool.query(query, [title, description, category, location, status, priority || 'Medium', id]);
   }
 
   static async delete(id) {

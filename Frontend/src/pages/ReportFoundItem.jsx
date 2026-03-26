@@ -21,6 +21,7 @@ export default function ReportFoundItem() {
     date: "",
     imageUrl: "",
     contact: "",
+    priority: "Medium",
   });
 
   const categories = [
@@ -71,7 +72,7 @@ export default function ReportFoundItem() {
       return;
     }
 
-    if (!formData.itemName || !formData.category || !formData.description || !formData.location || !formData.contact) {
+    if (!formData.itemName || !formData.category || !formData.description || !formData.location || !formData.contact || !formData.priority) {
       setError("Please fill all required fields");
       return;
     }
@@ -88,6 +89,7 @@ export default function ReportFoundItem() {
         contactPhone: formData.contact,
         contactEmail: user.email,
         imageUrl: formData.imageUrl,
+        priority: formData.priority,
       });
 
       if (response.success) {
@@ -193,6 +195,22 @@ export default function ReportFoundItem() {
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
+                </select>
+              </motion.div>
+
+              {/* Priority */}
+              <motion.div variants={itemVariants}>
+                <label className="block font-bold text-gray-700 mb-2">Priority Level *</label>
+                <select
+                  name="priority"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition"
+                  value={formData.priority}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
                 </select>
               </motion.div>
 

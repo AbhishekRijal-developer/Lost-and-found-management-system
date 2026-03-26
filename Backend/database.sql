@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS items (
   category VARCHAR(100),
   itemType ENUM('Lost', 'Found') NOT NULL,
   status ENUM('Active', 'Resolved', 'Archived') DEFAULT 'Active',
+  priority ENUM('Low', 'Medium', 'High') DEFAULT 'Medium',
   location VARCHAR(255),
   contactPhone VARCHAR(20),
   contactEmail VARCHAR(100),
@@ -49,6 +50,7 @@ CREATE TABLE IF NOT EXISTS items (
   INDEX idx_userId (userId),
   INDEX idx_itemType (itemType),
   INDEX idx_status (status),
+  INDEX idx_priority (priority),
   INDEX idx_createdAt (createdAt)
 );
 

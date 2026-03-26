@@ -6,13 +6,6 @@ import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
 
 export default function AboutUsPage() {
-  const teamMembers = [
-    { name: "Team Lead", role: "Project Director" },
-    { name: "Developer", role: "Full Stack Dev" },
-    { name: "Designer", role: "UI/UX Designer" },
-    { name: "Manager", role: "Product Manager" },
-  ];
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -45,7 +38,7 @@ export default function AboutUsPage() {
         >
           About Us
         </motion.h1>
-        <p className="text-gray-600 text-lg">Discover our mission and meet our amazing team</p>
+        <p className="text-gray-600 text-lg">Discover our mission</p>
       </motion.div>
 
       {/* Main Content */}
@@ -89,72 +82,6 @@ export default function AboutUsPage() {
           </motion.div>
         </motion.div>
 
-        {/* Team Section */}
-        <motion.div
-          className="mb-16"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.h2 
-            className="text-4xl font-bold text-center mb-12 text-green-600"
-            variants={itemVariants}
-          >
-            Meet Our Team
-          </motion.h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={index}
-                className="group"
-                variants={itemVariants}
-                whileHover={{ y: -10 }}
-              >
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow">
-                  {/* Avatar */}
-                  <div className="w-full h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative overflow-hidden">
-                    <div className="w-32 h-32 bg-white/30 rounded-full flex items-center justify-center text-5xl backdrop-blur-sm">
-                      👤
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-transparent group-hover:from-black/20 transition-all"></div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6 text-center">
-                    <h3 className="text-xl font-bold text-gray-800 mb-1">{member.name}</h3>
-                    <p className="text-green-600 font-semibold mb-4">{member.role}</p>
-                    
-                    {/* Social Links */}
-                    <div className="flex justify-center gap-4 pt-4 border-t border-gray-200">
-                      <motion.a
-                        href="#"
-                        className="text-pink-600 hover:text-pink-700 text-2xl transition transform hover:scale-125"
-                        whileHover={{ rotate: 10 }}
-                      >
-                        <FiInstagram />
-                      </motion.a>
-                      <motion.a
-                        href="#"
-                        className="text-green-600 hover:text-green-700 text-2xl transition transform hover:scale-125"
-                        whileHover={{ rotate: 10 }}
-                      >
-                        <IoLogoWhatsapp />
-                      </motion.a>
-                      <motion.a
-                        href="#"
-                        className="text-gray-700 hover:text-gray-800 text-2xl transition transform hover:scale-125"
-                        whileHover={{ rotate: 10 }}
-                      >
-                        <FiLink />
-                      </motion.a>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
 
         {/* Features Section */}
         <motion.div

@@ -131,7 +131,7 @@ export const itemController = {
   // Create new item
   createItem: async (req, res) => {
     try {
-      const { title, description, category, itemType, location, contactPhone, contactEmail, imageUrl } = req.body;
+      const { title, description, category, itemType, location, contactPhone, contactEmail, imageUrl, priority } = req.body;
       const userId = req.user?.id;
       
       if (!userId || !title || !description || !itemType) {
@@ -151,18 +151,41 @@ export const itemController = {
           });
         }
 
-        const query = 'INSERT INTO items (userId, title, description, category, itemType, location, contactPhone, contactEmail, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const [result] = await connection.query(query, [
-          userId,
-          title,
-          description,
-          category || null,
-          itemType,
-          location || null,
-          contactPhone || null,
-          contactEmail || null,
-          imageUrl || null
-        ]);
+        // Check if priority column exists by attempting insert with priority
+        let result;
+        try {
+          const query = 'INSERT INTO items (userId, title, description, category, itemType, priority, location, contactPhone, contactEmail, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+          [result] = await connection.query(query, [
+            userId,
+            title,
+            description,
+            category || null,
+            itemType,
+            priority || 'Medium',
+            location || null,
+            contactPhone || null,
+            contactEmail || null,
+            imageUrl || null
+          ]);
+        } catch (priorityError) {
+          // If priority column doesn't exist, insert without it
+          if (priorityError.message.includes('Unknown column')) {
+            const fallbackQuery = 'INSERT INTO items (userId, title, description, category, itemType, location, contactPhone, contactEmail, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            [result] = await connection.query(fallbackQuery, [
+              userId,
+              title,
+              description,
+              category || null,
+              itemType,
+              location || null,
+              contactPhone || null,
+              contactEmail || null,
+              imageUrl || null
+            ]);
+          } else {
+            throw priorityError;
+          }
+        }
         
         // Send email notification (don't wait for it)
         setTimeout(() => {
@@ -192,7 +215,7 @@ export const itemController = {
   updateItem: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, description, category, status, location, contactPhone } = req.body;
+      const { title, description, category, status, location, contactPhone, priority } = req.body;
       
       const connection = await pool.getConnection();
       
@@ -216,8 +239,18 @@ export const itemController = {
           });
         }
 
-        const query = 'UPDATE items SET title = ?, description = ?, category = ?, status = ?, location = ?, contactPhone = ?, updatedAt = NOW() WHERE id = ?';
-        await connection.query(query, [title, description, category, status, location, contactPhone, id]);
+        try {
+          const query = 'UPDATE items SET title = ?, description = ?, category = ?, status = ?, location = ?, contactPhone = ?, priority = ?, updatedAt = NOW() WHERE id = ?';
+          await connection.query(query, [title, description, category, status, location, contactPhone, priority || 'Medium', id]);
+        } catch (priorityError) {
+          // If priority column doesn't exist, update without it
+          if (priorityError.message.includes('Unknown column')) {
+            const fallbackQuery = 'UPDATE items SET title = ?, description = ?, category = ?, status = ?, location = ?, contactPhone = ?, updatedAt = NOW() WHERE id = ?';
+            await connection.query(fallbackQuery, [title, description, category, status, location, contactPhone, id]);
+          } else {
+            throw priorityError;
+          }
+        }
         
         return res.json({
           success: true,
